@@ -60,3 +60,11 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# PyDev
+RemoteSystemsTempFiles
+.project
+.pydevproject
+.metadata
+.settings
+*.prefs

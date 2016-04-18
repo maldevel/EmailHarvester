@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# encoding: UTF-8
+
 """
     This file is part of EmailHarvester
     Copyright (C) 2016 @maldevel
@@ -20,3 +23,39 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
+
+__author__ = "maldevel"
+__copyright__ = "Copyright (c) 2016 @maldevel"
+__credits__ = ["maldevel"]
+__license__ = "GPLv3"
+__version__ = "3.0"
+__maintainer__ = "maldevel"
+
+
+################################
+import argparse
+import sys
+
+from argparse import RawTextHelpFormatter
+################################
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description="""
+    
+ _____                   _  _   _   _                                _              
+|  ___|                 (_)| | | | | |                              | |             
+| |__  _ __ ___    __ _  _ | | | |_| |  __ _  _ __ __   __ ___  ___ | |_  ___  _ __ 
+|  __|| '_ ` _ \  / _` || || | |  _  | / _` || '__|\ \ / // _ \/ __|| __|/ _ \| '__|
+| |___| | | | | || (_| || || | | | | || (_| || |    \ V /|  __/\__ \| |_|  __/| |   
+\____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_| 
+        
+""",                                 
+                                     formatter_class=RawTextHelpFormatter)
+    
+    if len(sys.argv) is 1:
+        parser.print_help()
+        sys.exit()
+        
+    args = parser.parse_args()

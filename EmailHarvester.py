@@ -273,7 +273,7 @@ if __name__ == '__main__':
                     pass
             file.close
         except Exception as e:
-            print(red("Error saving CSV file: " + e))
+            print(red("Error saving TXT file: " + e))
             
         try:
             filename = filename.split(".")[0] + ".xml"

@@ -58,12 +58,12 @@ optional arguments:
 
 Examples
 =====
-* Search in Google
-./EmailHarvester.py -d example.com -e google
+**Search in Google**
+* ./EmailHarvester.py -d example.com -e google
 
-* Search in all engines
-./EmailHarvester.py -d example.com -e all
+**Search in all engines**
+* ./EmailHarvester.py -d example.com -e all
 
-* Limit results 
-./EmailHarvester.py -d example.com -e all -l 200
+**Limit results**
+* ./EmailHarvester.py -d example.com -e all -l 200
 

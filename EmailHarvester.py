@@ -28,7 +28,7 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.1"
+__version__ = "1.1.2"
 __maintainer__ = "maldevel"
 
 
@@ -198,7 +198,7 @@ if __name__ == '__main__':
 \____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_| 
 
     A tool to retrieve Domain email addresses from Search Engines | @maldevel
-                                 {}: {}
+                                {}: {}
 """.format(red('Version'), yellow(__version__)),                                 
                                      formatter_class=RawTextHelpFormatter)
     

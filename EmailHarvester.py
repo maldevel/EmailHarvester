@@ -42,6 +42,7 @@ import re
 from termcolor import colored
 from argparse import RawTextHelpFormatter
 from sys import platform as _platform
+from urllib.parse import urlparse
 ################################
 
 
@@ -96,15 +97,16 @@ class myparser:
 ###################################################################
 
 class SearchEngine:
-    def __init__(self, urlPattern, word, limit, counterInit, counterStep):
+    def __init__(self, urlPattern, word, limit, counterInit, counterStep, userAgent, proxy):
         self.results = ""
         self.totalresults = ""
-        self.userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+        self.userAgent = userAgent
         self.limit = int(limit)
         self.counter = int(counterInit)
         self.urlPattern = urlPattern
         self.step = int(counterStep)
         self.word = word
+        self.proxy = proxy
         
     def do_search(self):
         try:
@@ -112,9 +114,19 @@ class SearchEngine:
             headers = {
                 'User-Agent': self.userAgent,
             }
-            r=requests.get(urly, headers=headers)
+
+            if(self.proxy):
+                proxies = {
+                  self.proxy.scheme: "http://" + self.proxy.netloc
+                }
+                r=requests.get(urly, headers=headers, proxies=proxies)
+            else:
+                r=requests.get(urly, headers=headers)
+                
         except Exception as e:
             print(e)
+            sys.exit(4)
+        
         self.results = r.content.decode(r.encoding)
         self.totalresults += self.results
     
@@ -122,8 +134,8 @@ class SearchEngine:
         while (self.counter < self.limit):
             self.do_search()
             time.sleep(1)
-            print(green("\tSearching " + str(self.counter) + " results..."))
             self.counter += self.step
+            print(green("\tSearching " + str(self.counter) + " results..."))
             
     def get_emails(self):
         rawres = myparser(self.totalresults, self.word)
@@ -149,7 +161,13 @@ def unique(data):
             if x not in unique:
                 unique.append(x)
         return unique
-    
+
+def checkProxyUrl(url):
+    url_checked = urlparse(url)
+    if ((url_checked.scheme != 'http') & (url_checked.scheme != 'https')) | (url_checked.netloc == ''):
+        raise argparse.ArgumentTypeError('Invalid {} Proxy URL (example: http://127.0.0.1:8080).'.format(url))
+    return url_checked
+        
 ###################################################################
 
 def limit_type(x):
@@ -184,6 +202,8 @@ if __name__ == '__main__':
     parser.add_argument("-s", '--save', metavar='FILE', dest='filename', type=str, help="Save the results into a TXT and XML file.")
     parser.add_argument("-e", '--engine', metavar='ENGINE', dest='engine', default="all", type=engine_type, help="Select search engine(google, bing, yahoo, ask, all).")
     parser.add_argument("-l", '--limit', metavar='LIMIT', dest='limit', type=limit_type, default=100, help="Limit the number of results.")
+    parser.add_argument('-u', '--user-agent', metavar='USER-AGENT', dest='uagent', type=str, help="Set the User-Agent request header.")
+    parser.add_argument('-x', '--proxy', metavar='PROXY', dest='proxy', type=checkProxyUrl, help='Setup proxy server (example: http://127.0.0.1:8080)')
     
     if len(sys.argv) is 1:
         parser.print_help()
@@ -195,58 +215,71 @@ if __name__ == '__main__':
     if(args.domain):
         domain = args.domain 
     else:
-        print('[{}] {}'.format(red('ERROR'), "Please specify a domain name to search."))
+        print(red("[-] Please specify a domain name to search."))
         sys.exit(2)
+        
+    userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+    if(args.uagent):
+        userAgent = args.uagent 
+    
+    print("User-Agent in use: {}".format(yellow(userAgent)))
+    
+    if(args.proxy):
+        print("Proxy server in use: {}".format(yellow(args.proxy.scheme + "://" + args.proxy.netloc)))
         
     filename = ""
     if(args.filename):
         filename = args.filename
         
     limit = args.limit        
-    engine = args.engine 
+    engine = args.engine
 
-
+    googleUrl = "http://www.google.com/search?num=100&start={counter}&hl=en&q=%40\"{word}\""
+    bingUrl = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
+    askUrl = "http://www.ask.com/web?q=%40{word}"
+    yahooUrl = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
+    
     if engine == "google":
-        print(green("[-] Searching in Google..\n"))
-        search = SearchEngine("http://www.google.com/search?num=100&start={counter}&hl=en&q=%40\"{word}\"", domain, limit, 0, 100)
+        print(green("[+] Searching in Google..\n"))
+        search = SearchEngine(googleUrl, domain, limit, 0, 100, userAgent, args.proxy)
         search.process()
         all_emails = search.get_emails()
         
     elif engine == "bing":
-        print(green("[-] Searching in Bing..\n"))
-        search = SearchEngine("http://www.bing.com/search?q=%40{word}&count=50&first={counter}", domain, limit, 0, 50)
+        print(green("[+] Searching in Bing..\n"))
+        search = SearchEngine(bingUrl, domain, limit, 0, 50, userAgent, args.proxy)
         search.process()
         all_emails = search.get_emails()
         
     elif engine == "ask":
-        print(green("[-] Searching in ASK..\n"))
-        search = SearchEngine("http://www.ask.com/web?q=%40{word}", domain, limit, 0, 100)
+        print(green("[+] Searching in ASK..\n"))
+        search = SearchEngine(askUrl, domain, limit, 0, 100, userAgent, args.proxy)
         search.process()
         all_emails = search.get_emails()
         
     elif engine == "yahoo":
-        print(green("[-] Searching in Yahoo..\n"))
-        search = SearchEngine("http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}", domain, limit, 1, 100)
+        print(green("[+] Searching in Yahoo..\n"))
+        search = SearchEngine(yahooUrl, domain, limit, 1, 100, userAgent, args.proxy)
         search.process()
         all_emails = search.get_emails()
         
     elif engine == "all":
-        print(green("[-] Searching everywhere..\n"))
+        print(green("[+] Searching everywhere..\n"))
         all_emails = []
-        print(green("[-] Searching in Google..\n"))
-        search = SearchEngine("http://www.google.com/search?num=100&start={counter}&hl=en&q=%40\"{word}\"", domain, limit, 0, 100)
+        print(green("[+] Searching in Google..\n"))
+        search = SearchEngine(googleUrl, domain, limit, 0, 100, userAgent, args.proxy)
         search.process()
         all_emails.extend(search.get_emails())
-        print(green("\n[-] Searching in Bing..\n"))
-        search = SearchEngine("http://www.bing.com/search?q=%40{word}&count=50&first={counter}", domain, limit, 0, 50)
+        print(green("\n[+] Searching in Bing..\n"))
+        search = SearchEngine(bingUrl, domain, limit, 0, 50, userAgent, args.proxy)
         search.process()
         all_emails.extend(search.get_emails())
-        print(green("\n[-] Searching in ASK..\n"))
-        search = SearchEngine("http://www.ask.com/web?q=%40{word}", domain, limit, 0, 100)
+        print(green("\n[+] Searching in ASK..\n"))
+        search = SearchEngine(askUrl, domain, limit, 0, 100, userAgent, args.proxy)
         search.process()
         all_emails.extend(search.get_emails())
-        print(green("\n[-] Searching in Yahoo..\n"))
-        search = SearchEngine("http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}", domain, limit, 1, 100)
+        print(green("\n[+] Searching in Yahoo..\n"))
+        search = SearchEngine(yahooUrl, domain, limit, 1, 100, userAgent, args.proxy)
         search.process()
         all_emails.extend(search.get_emails())
         all_emails = unique(all_emails)

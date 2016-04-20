@@ -17,11 +17,12 @@ Requirements
 
 Features
 =====
-* Retrieve Domain email addresses from Search Engines
-* Google
-* Bing
-* Yahoo
-* ASK
+* Retrieve Domain email addresses from Search Engines (Google, Bing, Yahoo, ASK).
+* Export results to txt and xml files.
+* Limit search results.
+* Define your own User-Agent string.
+* Use proxy server.
+
 
 Download/Installation
 ====
@@ -33,6 +34,7 @@ Usage
 =====
 ```
 usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
+                         [-u USER-AGENT] [-x PROXY]
 
  _____                   _  _   _   _                                _
 |  ___|                 (_)| | | | | |                              | |
@@ -53,6 +55,10 @@ optional arguments:
                         Select search engine(google, bing, yahoo, ask, all).
   -l LIMIT, --limit LIMIT
                         Limit the number of results.
+  -u USER-AGENT, --user-agent USER-AGENT
+                        Set the User-Agent request header.
+  -x PROXY, --proxy PROXY
+                        Setup proxy server (example: http://127.0.0.1:8080)
 ```
 
 
@@ -67,3 +73,11 @@ Examples
 **Limit results**
 * ./EmailHarvester.py -d example.com -e all -l 200
 
+**Export emails**
+* ./EmailHarvester.py -d example.com -e all -l 200 -s emails.txt
+
+**Custom User-Agent string**
+* ./EmailHarvester.py -d example.com -e all -u "MyUserAgentString 1.0"
+
+**Proxy Server**
+* ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080 

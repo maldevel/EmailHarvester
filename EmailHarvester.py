@@ -26,7 +26,7 @@
 
 __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
-__credits__ = ["maldevel"]
+__credits__ = ["maldevel", "Christian Martorella"]
 __license__ = "GPLv3"
 __version__ = "1.1"
 __maintainer__ = "maldevel"
@@ -73,14 +73,18 @@ class myparser:
         self.results = re.sub('%3a', ' ', self.results)
         self.results = re.sub('<strong>', '', self.results)
         self.results = re.sub('</strong>', '', self.results)
-        #self.results = re.sub('>', '', self.results)
+        self.results = re.sub('<wbr>', '', self.results)
+        self.results = re.sub('</wbr>','', self.results)
+        
+        for e in ('>', ':', '=', '<', '/', '\\', ';', '&', '%3A', '%3D', '%3C'):
+            self.results = str.replace(self.results, e, ' ')
         
     def emails(self):
         self.genericClean()
         reg_emails = re.compile(
-            '[a-zA-Z0-9\.\-_]*' +
+            '[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
             '@' +
-            '(?:[a-zA-Z0-9\.\-]*\.)?' +
+            '[a-zA-Z0-9.-]*' +
             self.word)
         self.temp = reg_emails.findall(self.results)
         emails = self.unique()
@@ -199,7 +203,7 @@ if __name__ == '__main__':
                                      formatter_class=RawTextHelpFormatter)
     
     parser.add_argument("-d", '--domain', metavar='DOMAIN', dest='domain', type=str, help="Domain to search.")
-    parser.add_argument("-s", '--save', metavar='FILE', dest='filename', type=str, help="Save the results into a TXT and XML file.")
+    parser.add_argument("-s", '--save', metavar='FILE', dest='filename', type=str, help="Save the results into a TXT and XML file (both).")
     parser.add_argument("-e", '--engine', metavar='ENGINE', dest='engine', default="all", type=engine_type, help="Select search engine(google, bing, yahoo, ask, all).")
     parser.add_argument("-l", '--limit', metavar='LIMIT', dest='limit', type=limit_type, default=100, help="Limit the number of results.")
     parser.add_argument('-u', '--user-agent', metavar='USER-AGENT', dest='uagent', type=str, help="Set the User-Agent request header.")
@@ -321,4 +325,3 @@ if __name__ == '__main__':
         except Exception as er:
             print(red("Error saving XML file: " + er))
             
-        sys.exit()

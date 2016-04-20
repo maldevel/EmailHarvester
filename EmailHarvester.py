@@ -284,7 +284,7 @@ if __name__ == '__main__':
         for emails in all_emails:
             print(emails)
             
-        if filename:
+    if filename:
         try:
             print(green("[+] Saving files..."))
             with open(filename, 'w') as out_file:

@@ -234,11 +234,6 @@ if __name__ == '__main__':
     limit = args.limit        
     engine = args.engine
 
-    googleUrl = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
-    bingUrl = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
-    askUrl = "http://www.ask.com/web?q=%40{word}"
-    yahooUrl = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
-    
     if engine == "all":
         print(green("[+] Searching everywhere..\n"))
         all_emails = (ask(domain, limit, userAgent, args.proxy) +

@@ -58,26 +58,11 @@ class myparser:
             self.temp = []
             
     def genericClean(self):
-        self.results = re.sub('<KW>', '', self.results)
-        self.results = re.sub('</KW>', '', self.results)
-        self.results = re.sub('<title>', '', self.results)
-        self.results = re.sub('</div>', '', self.results)
-        self.results = re.sub('<p>', '', self.results)
-        self.results = re.sub('</span>', '', self.results)
-        self.results = re.sub('</a>', '', self.results)
-        self.results = re.sub('<em>', '', self.results)
-        self.results = re.sub('<b>', '', self.results)
-        self.results = re.sub('</b>', '', self.results)
-        self.results = re.sub('</em>', '', self.results)
-        self.results = re.sub('%2f', ' ', self.results)
-        self.results = re.sub('%3a', ' ', self.results)
-        self.results = re.sub('<strong>', '', self.results)
-        self.results = re.sub('</strong>', '', self.results)
-        self.results = re.sub('<wbr>', '', self.results)
-        self.results = re.sub('</wbr>','', self.results)
-        
-        for e in ('>', ':', '=', '<', '/', '\\', ';', '&', '%3A', '%3D', '%3C'):
-            self.results = str.replace(self.results, e, ' ')
+        for e in '''<KW> </KW> </a> <b> </b> </div> <em> </em> <p> </span>
+                    <strong> </strong> <title> <wbr> </wbr>'''.split():
+            self.results = self.results.replace(e, '')
+        for e in '%2f %3a %3A %3C %3D & / : ; < = > \\'.split():
+            self.results = self.results.replace(e, ' ')
         
     def emails(self):
         self.genericClean()

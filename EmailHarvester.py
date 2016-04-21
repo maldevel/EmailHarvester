@@ -26,9 +26,9 @@
 
 __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
-__credits__ = ["maldevel", "Christian Martorella"]
+__credits__ = ["maldevel", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 __maintainer__ = "maldevel"
 
 

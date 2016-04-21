@@ -97,14 +97,10 @@ class SearchEngine:
     def do_search(self):
         try:
             urly = self.urlPattern.format(counter=str(self.counter), word=self.word)
-            headers = {
-                'User-Agent': self.userAgent,
-            }
+            headers = {'User-Agent': self.userAgent}
 
             if(self.proxy):
-                proxies = {
-                  self.proxy.scheme: "http://" + self.proxy.netloc
-                }
+                proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
                 r=requests.get(urly, headers=headers, proxies=proxies)
             else:
                 r=requests.get(urly, headers=headers)

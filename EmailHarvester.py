@@ -148,13 +148,13 @@ def checkProxyUrl(url):
         
 ###################################################################
 
-def limit_check(x):
+def limit_type(x):
     x = int(x)
     if x > 0:
         return x
     raise argparse.ArgumentTypeError("Minimum results limit is 1.")
 
-def engine_check(engine):
+def engine_type(engine):
     engines = 'all ask bing google yahoo'.split() 
     if engine in engines:
         return engine
@@ -207,8 +207,8 @@ if __name__ == '__main__':
     
     parser.add_argument("-d", '--domain', metavar='DOMAIN', dest='domain', type=str, help="Domain to search.")
     parser.add_argument("-s", '--save', metavar='FILE', dest='filename', type=str, help="Save the results into a TXT and XML file (both).")
-    parser.add_argument("-e", '--engine', metavar='ENGINE', dest='engine', default="all", type=engine_check, help="Select search engine(google, bing, yahoo, ask, all).")
-    parser.add_argument("-l", '--limit', metavar='LIMIT', dest='limit', type=limit_check, default=100, help="Limit the number of results.")
+    parser.add_argument("-e", '--engine', metavar='ENGINE', dest='engine', default="all", type=engine_type, help="Select search engine(google, bing, yahoo, ask, all).")
+    parser.add_argument("-l", '--limit', metavar='LIMIT', dest='limit', type=limit_type, default=100, help="Limit the number of results.")
     parser.add_argument('-u', '--user-agent', metavar='USER-AGENT', dest='uagent', type=str, help="Set the User-Agent request header.")
     parser.add_argument('-x', '--proxy', metavar='PROXY', dest='proxy', type=checkProxyUrl, help='Setup proxy server (example: http://127.0.0.1:8080)')
     

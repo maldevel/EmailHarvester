@@ -158,10 +158,39 @@ def limit_type(x):
         raise argparse.ArgumentTypeError("Minimum results limit is 1.")
     return x
 
-def engine_type(x):
-    if x not in ("google", "bing", "yahoo", "ask", "all"):
-        raise argparse.ArgumentTypeError("Invalid search engine, try with: google, bing, yahoo, ask, all.")
-    return x
+def engine_type(engine):
+    engines = 'all ask bing google yahoo'.split() 
+    if engine in engines:
+        return engine
+    raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines))
+
+def ask(domain, limit, userAgent, proxy):
+    url = "http://www.ask.com/web?q=%40{word}"
+    print(green("[+] Searching in ASK..\n"))
+    search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
+    search.process()
+    return search.get_emails()
+        
+def bing(domain, limit, userAgent, proxy):
+    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
+    print(green("[+] Searching in Bing..\n"))
+    search = SearchEngine(url, domain, limit, 0, 50, userAgent, proxy)
+    search.process()
+    return search.get_emails()
+        
+def google(domain, limit, userAgent, proxy):
+    url = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
+    print(green("[+] Searching in Google..\n"))
+    search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
+    search.process()
+    return search.get_emails()
+        
+def yahoo(domain, limit, userAgent, proxy):
+    url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
+    print(green("[+] Searching in Yahoo..\n"))
+    search = SearchEngine(url, domain, limit, 1, 100, userAgent, proxy)
+    search.process()
+    return search.get_emails()
 
 
 if __name__ == '__main__':
@@ -214,60 +243,32 @@ if __name__ == '__main__':
     askUrl = "http://www.ask.com/web?q=%40{word}"
     yahooUrl = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
     
-    if engine == "google":
-        print(green("[+] Searching in Google..\n"))
-        search = SearchEngine(googleUrl, domain, limit, 0, 100, userAgent, args.proxy)
-        search.process()
-        all_emails = search.get_emails()
-        
-    elif engine == "bing":
-        print(green("[+] Searching in Bing..\n"))
-        search = SearchEngine(bingUrl, domain, limit, 0, 50, userAgent, args.proxy)
-        search.process()
-        all_emails = search.get_emails()
-        
-    elif engine == "ask":
-        print(green("[+] Searching in ASK..\n"))
-        search = SearchEngine(askUrl, domain, limit, 0, 100, userAgent, args.proxy)
-        search.process()
-        all_emails = search.get_emails()
-        
-    elif engine == "yahoo":
-        print(green("[+] Searching in Yahoo..\n"))
-        search = SearchEngine(yahooUrl, domain, limit, 1, 100, userAgent, args.proxy)
-        search.process()
-        all_emails = search.get_emails()
-        
-    elif engine == "all":
+    if engine == "all":
         print(green("[+] Searching everywhere..\n"))
-        all_emails = []
-        print(green("[+] Searching in Google..\n"))
-        search = SearchEngine(googleUrl, domain, limit, 0, 100, userAgent, args.proxy)
-        search.process()
-        all_emails.extend(search.get_emails())
-        print(green("\n[+] Searching in Bing..\n"))
-        search = SearchEngine(bingUrl, domain, limit, 0, 50, userAgent, args.proxy)
-        search.process()
-        all_emails.extend(search.get_emails())
-        print(green("\n[+] Searching in ASK..\n"))
-        search = SearchEngine(askUrl, domain, limit, 0, 100, userAgent, args.proxy)
-        search.process()
-        all_emails.extend(search.get_emails())
-        print(green("\n[+] Searching in Yahoo..\n"))
-        search = SearchEngine(yahooUrl, domain, limit, 1, 100, userAgent, args.proxy)
-        search.process()
-        all_emails.extend(search.get_emails())
-        all_emails = unique(all_emails)
-    
-    print(green("\n\n[+] Emails found:"))
-    print(green("-" * 18))
+        all_emails = (ask(domain, limit, userAgent, args.proxy) +
+                      bing(domain, limit, userAgent, args.proxy) +
+                      yahoo(domain, limit, userAgent, args.proxy) +
+                      google(domain, limit, userAgent, args.proxy))
+    elif engine == "ask":
+        all_emails = ask(domain, limit, userAgent, args.proxy)
+    elif engine == "bing":
+        all_emails = bing(domain, limit, userAgent, args.proxy)
+    elif engine == "yahoo":
+        all_emails = yahoo(domain, limit, userAgent, args.proxy)
+    elif engine == "google":
+        all_emails = google(domain, limit, userAgent, args.proxy)
+    all_emails = unique(all_emails)
     
     if not all_emails:
         print(red("No emails found"))
         sys.exit(3)
-    else:
-        for emails in all_emails:
-            print(emails)
+
+    msg = "\n\n[+] {} mails found:".format(len(all_emails))
+    print(green(msg))
+    print(green("-" * len(msg)))
+
+    for emails in all_emails:
+        print(emails)
             
     if filename:
         try:
@@ -285,8 +286,8 @@ if __name__ == '__main__':
             filename = filename.split(".")[0] + ".xml"
             with open(filename, 'w') as out_file:
                 out_file.write('<?xml version="1.0" encoding="UTF-8"?><EmailHarvester>')
-                for x in all_emails:
-                    out_file.write('<email>{}</email>'.format(x))
+                for email in all_emails:
+                    out_file.write('<email>{}</email>'.format(email))
                 out_file.write('</EmailHarvester>')
             print(green("Files saved!"))
         except Exception as er:

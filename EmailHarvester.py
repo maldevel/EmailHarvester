@@ -154,9 +154,9 @@ def checkProxyUrl(url):
 
 def limit_type(x):
     x = int(x)
-    if x <= 0:
-        raise argparse.ArgumentTypeError("Minimum results limit is 1.")
-    return x
+    if x > 0:
+        return x
+    raise argparse.ArgumentTypeError("Minimum results limit is 1.")
 
 def engine_type(engine):
     engines = 'all ask bing google yahoo'.split() 
@@ -165,29 +165,29 @@ def engine_type(engine):
     raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines))
 
 def ask(domain, limit, userAgent, proxy):
-    url = "http://www.ask.com/web?q=%40{word}"
     print(green("[+] Searching in ASK..\n"))
+    url = "http://www.ask.com/web?q=%40{word}"
     search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
     search.process()
     return search.get_emails()
         
 def bing(domain, limit, userAgent, proxy):
-    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
     print(green("[+] Searching in Bing..\n"))
+    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
     search = SearchEngine(url, domain, limit, 0, 50, userAgent, proxy)
     search.process()
     return search.get_emails()
         
 def google(domain, limit, userAgent, proxy):
-    url = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
     print(green("[+] Searching in Google..\n"))
+    url = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
     search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
     search.process()
     return search.get_emails()
         
 def yahoo(domain, limit, userAgent, proxy):
-    url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
     print(green("[+] Searching in Yahoo..\n"))
+    url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
     search = SearchEngine(url, domain, limit, 1, 100, userAgent, proxy)
     search.process()
     return search.get_emails()

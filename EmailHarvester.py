@@ -91,10 +91,7 @@ class myparser:
         return emails
     
     def unique(self):
-        self.new = []
-        for x in self.temp:
-            if x not in self.new:
-                self.new.append(x)
+        self.new = list(set(self.temp))
         return self.new
     
     
@@ -160,15 +157,11 @@ def red(text):
     return colored(text, 'red', attrs=['bold'])
 
 def unique(data):
-        unique = []
-        for x in data:
-            if x not in unique:
-                unique.append(x)
-        return unique
+        return list(set(data))
 
 def checkProxyUrl(url):
     url_checked = urlparse(url)
-    if ((url_checked.scheme != 'http') & (url_checked.scheme != 'https')) | (url_checked.netloc == ''):
+    if (url_checked.scheme not in ('http', 'https')) | (url_checked.netloc == ''):
         raise argparse.ArgumentTypeError('Invalid {} Proxy URL (example: http://127.0.0.1:8080).'.format(url))
     return url_checked
         
@@ -212,33 +205,26 @@ if __name__ == '__main__':
     if len(sys.argv) is 1:
         parser.print_help()
         sys.exit()
-        
+
     args = parser.parse_args()
-    
-    domain = ""
-    if(args.domain):
-        domain = args.domain 
-    else:
+    if not args.domain:
         print(red("[-] Please specify a domain name to search."))
         sys.exit(2)
-        
-    userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-    if(args.uagent):
-        userAgent = args.uagent 
+    domain = args.domain
+
+    userAgent = (args.uagent or
+                 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
     
     print("User-Agent in use: {}".format(yellow(userAgent)))
     
-    if(args.proxy):
+    if args.proxy:
         print("Proxy server in use: {}".format(yellow(args.proxy.scheme + "://" + args.proxy.netloc)))
-        
-    filename = ""
-    if(args.filename):
-        filename = args.filename
-        
+
+    filename = args.filename or ""
     limit = args.limit        
     engine = args.engine
 
-    googleUrl = "http://www.google.com/search?num=100&start={counter}&hl=en&q=%40\"{word}\""
+    googleUrl = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
     bingUrl = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
     askUrl = "http://www.ask.com/web?q=%40{word}"
     yahooUrl = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
@@ -289,39 +275,35 @@ if __name__ == '__main__':
         all_emails = unique(all_emails)
     
     print(green("\n\n[+] Emails found:"))
-    print(green("------------------"))
+    print(green("-" * 18))
     
-    if all_emails == []:
+    if not all_emails:
         print(red("No emails found"))
         sys.exit(3)
     else:
         for emails in all_emails:
             print(emails)
             
-    if filename != "":
+    if filename:
         try:
             print(green("[+] Saving files..."))
-            file = open(filename, 'w')
-            for email in all_emails:
-                try:
-                    file.write(email + "\n")
-                except:
-                    print(red("Exception " + email))
-                    pass
-            file.close
+            with open(filename, 'w') as out_file:
+                for email in all_emails:
+                    try:
+                        out_file.write(email + "\n")
+                    except:
+                        print(red("Exception " + email))
         except Exception as e:
             print(red("Error saving TXT file: " + e))
             
         try:
             filename = filename.split(".")[0] + ".xml"
-            file = open(filename, 'w')
-            file.write('<?xml version="1.0" encoding="UTF-8"?><EmailHarvester>')
-            for x in all_emails:
-                file.write('<email>' + x + '</email>')
-            file.write('</EmailHarvester>')
-            file.flush()
-            file.close()
+            with open(filename, 'w') as out_file:
+                out_file.write('<?xml version="1.0" encoding="UTF-8"?><EmailHarvester>')
+                for x in all_emails:
+                    out_file.write('<email>{}</email>'.format(x))
+                out_file.write('</EmailHarvester>')
             print(green("Files saved!"))
         except Exception as er:
             print(red("Error saving XML file: " + er))
-            
+

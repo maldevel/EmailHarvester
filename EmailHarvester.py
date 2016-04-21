@@ -62,7 +62,7 @@ class myparser:
                     <strong> </strong> <title> <wbr> </wbr>'''.split():
             self.results = self.results.replace(e, '')
         for e in '%2f %3a %3A %3C %3D & / : ; < = > \\'.split():
-            self.results = str.replace(self.results, e, ' ')
+            self.results = self.results.replace(e, ' ')
         
     def emails(self):
         self.genericClean()

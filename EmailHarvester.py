@@ -28,7 +28,7 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.1.3"
+__version__ = "1.1.5"
 __maintainer__ = "maldevel"
 
 
@@ -158,7 +158,9 @@ def engine_type(engine):
     engines = 'all ask bing google yahoo'.split() 
     if engine in engines:
         return engine
-    raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines))
+    raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines)))
+
+###################################################################
 
 def ask(domain, limit, userAgent, proxy):
     print(green("[+] Searching in ASK..\n"))
@@ -188,6 +190,7 @@ def yahoo(domain, limit, userAgent, proxy):
     search.process()
     return search.get_emails()
 
+###################################################################
 
 if __name__ == '__main__':
 

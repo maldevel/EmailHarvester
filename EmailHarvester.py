@@ -31,7 +31,6 @@ __license__ = "GPLv3"
 __version__ = "1.2.6"
 __maintainer__ = "maldevel"
 
-
 ################################
 import argparse
 import sys
@@ -78,7 +77,6 @@ class myparser:
         self.new = list(set(self.temp))
         return self.new
     
-    
 ###################################################################
 
 class EmailHarvester(object):
@@ -119,7 +117,6 @@ class EmailHarvester(object):
         try:
             urly = self.urlPattern.format(counter=str(self.counter), word=self.word)
             headers = {'User-Agent': self.userAgent}
-
             if(self.proxy):
                 proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
                 r=requests.get(urly, headers=headers, proxies=proxies)
@@ -178,7 +175,6 @@ def engine_type(engine):
         return engine
     raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines)))
 
-
 ###################################################################
 
 if __name__ == '__main__':
@@ -215,7 +211,6 @@ if __name__ == '__main__':
     parser.add_argument('--noprint', action='store_true', default=False, 
                         help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')
 
-
     if len(sys.argv) is 1:
         parser.print_help()
         sys.exit()
@@ -240,7 +235,6 @@ if __name__ == '__main__':
     app = EmailHarvester()
     plugins = app.get_plugins()
 
-    
     all_emails = []
     if engine == "all":
         print(green("[+] Searching everywhere.."))

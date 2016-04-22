@@ -26,9 +26,9 @@
 
 __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
-__credits__ = ["maldevel", "cclauss", "Christian Martorella"]
+__credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.1.6"
+__version__ = "1.2.6"
 __maintainer__ = "maldevel"
 
 
@@ -38,6 +38,7 @@ import sys
 import time
 import requests
 import re
+import os
 
 from termcolor import colored
 from argparse import RawTextHelpFormatter
@@ -45,18 +46,16 @@ from sys import platform as _platform
 from urllib.parse import urlparse
 ################################
 
-
 if _platform == 'win32':
     import colorama
     colorama.init()
-
 
 class myparser:
     def __init__(self, results, word):
             self.results = results
             self.word = word
             self.temp = []
-            
+
     def genericClean(self):
         for e in '''<KW> </KW> </a> <b> </b> </div> <em> </em> <p> </span>
                     <strong> </strong> <title> <wbr> </wbr>'''.split():
@@ -82,8 +81,30 @@ class myparser:
     
 ###################################################################
 
-class SearchEngine:
-    def __init__(self, urlPattern, word, limit, counterInit, counterStep, userAgent, proxy):
+class EmailHarvester(object):
+    
+    def __init__(self):
+        self.plugins = {}
+        path = "plugins/"
+        plugins = {}
+        
+        sys.path.insert(0, path)
+        for f in os.listdir(path):
+            fname, ext = os.path.splitext(f)
+            if ext == '.py':
+                mod = __import__(fname)
+                plugins[fname] = mod.Plugin(self)
+    
+    def register_plugin(self, search_method, functions):
+        self.plugins[search_method] = functions
+        
+    def get_plugins(self):
+        return self.plugins
+    
+    def show_message(self, msg):
+        print(green(msg))
+        
+    def init_search(self, urlPattern, word, limit, counterInit, counterStep, userAgent, proxy):
         self.results = ""
         self.totalresults = ""
         self.userAgent = userAgent
@@ -117,7 +138,7 @@ class SearchEngine:
             self.do_search()
             time.sleep(1)
             self.counter += self.step
-            print(green("\tSearching " + str(self.counter) + " results..."))
+            print("\tSearching " + str(self.counter) + " results...")
             
     def get_emails(self):
         rawres = myparser(self.totalresults, self.word)
@@ -131,22 +152,19 @@ def yellow(text):
 def green(text):
     return colored(text, 'green', attrs=['bold'])
 
-def blue(text):
-    return colored(text, 'blue', attrs=['bold'])
-
 def red(text):
     return colored(text, 'red', attrs=['bold'])
 
 def unique(data):
         return list(set(data))
 
+###################################################################
+
 def checkProxyUrl(url):
     url_checked = urlparse(url)
     if (url_checked.scheme not in ('http', 'https')) | (url_checked.netloc == ''):
         raise argparse.ArgumentTypeError('Invalid {} Proxy URL (example: http://127.0.0.1:8080).'.format(url))
     return url_checked
-        
-###################################################################
 
 def limit_type(x):
     x = int(x)
@@ -160,35 +178,6 @@ def engine_type(engine):
         return engine
     raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines)))
 
-###################################################################
-
-def ask(domain, limit, userAgent, proxy):
-    print(green("\n[+] Searching in ASK..\n"))
-    url = "http://www.ask.com/web?q=%40{word}"
-    search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
-    search.process()
-    return search.get_emails()
-        
-def bing(domain, limit, userAgent, proxy):
-    print(green("\n[+] Searching in Bing..\n"))
-    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
-    search = SearchEngine(url, domain, limit, 0, 50, userAgent, proxy)
-    search.process()
-    return search.get_emails()
-        
-def google(domain, limit, userAgent, proxy):
-    print(green("\n[+] Searching in Google..\n"))
-    url = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
-    search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
-    search.process()
-    return search.get_emails()
-        
-def yahoo(domain, limit, userAgent, proxy):
-    print(green("\n[+] Searching in Yahoo..\n"))
-    url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
-    search = SearchEngine(url, domain, limit, 1, 100, userAgent, proxy)
-    search.process()
-    return search.get_emails()
 
 ###################################################################
 
@@ -208,13 +197,23 @@ if __name__ == '__main__':
 """.format(red('Version'), yellow(__version__)),                                 
                                      formatter_class=RawTextHelpFormatter)
     
-    parser.add_argument("-d", '--domain', metavar='DOMAIN', dest='domain', type=str, help="Domain to search.")
-    parser.add_argument("-s", '--save', metavar='FILE', dest='filename', type=str, help="Save the results into a TXT and XML file (both).")
-    parser.add_argument("-e", '--engine', metavar='ENGINE', dest='engine', default="all", type=engine_type, help="Select search engine(google, bing, yahoo, ask, all).")
-    parser.add_argument("-l", '--limit', metavar='LIMIT', dest='limit', type=limit_type, default=100, help="Limit the number of results.")
-    parser.add_argument('-u', '--user-agent', metavar='USER-AGENT', dest='uagent', type=str, help="Set the User-Agent request header.")
-    parser.add_argument('-x', '--proxy', metavar='PROXY', dest='proxy', type=checkProxyUrl, help='Setup proxy server (example: http://127.0.0.1:8080)')
-    parser.add_argument('--noprint', action='store_true', help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')
+    parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain', 
+                        default=None, type=str, help="Domain to search.")
+    parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename', 
+                        default=None, type=str, help="Save the results into a TXT and XML file (both).")
+    
+    #(google, bing, yahoo, ask, all) needs to be fixed/scan plugins folder to show available search engines??
+    parser.add_argument("-e", '--engine', action="store", metavar='ENGINE', dest='engine', 
+                        default="all", type=engine_type, help="Select search engine plugin(google, bing, yahoo, ask, all).")
+    
+    parser.add_argument("-l", '--limit', action="store", metavar='LIMIT', dest='limit', 
+                        type=limit_type, default=100, help="Limit the number of results.")
+    parser.add_argument('-u', '--user-agent', action="store", metavar='USER-AGENT', dest='uagent', 
+                        type=str, help="Set the User-Agent request header.")
+    parser.add_argument('-x', '--proxy', action="store", metavar='PROXY', dest='proxy', 
+                        default=None, type=checkProxyUrl, help='Setup proxy server (example: http://127.0.0.1:8080)')
+    parser.add_argument('--noprint', action='store_true', default=False, 
+                        help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')
 
 
     if len(sys.argv) is 1:
@@ -238,26 +237,26 @@ if __name__ == '__main__':
     filename = args.filename or ""
     limit = args.limit        
     engine = args.engine
+    app = EmailHarvester()
+    plugins = app.get_plugins()
 
+    
+    all_emails = []
     if engine == "all":
         print(green("[+] Searching everywhere.."))
-        all_emails = (ask(domain, limit, userAgent, args.proxy) +
-                      bing(domain, limit, userAgent, args.proxy) +
-                      yahoo(domain, limit, userAgent, args.proxy) +
-                      google(domain, limit, userAgent, args.proxy))
-    elif engine == "ask":
-        all_emails = ask(domain, limit, userAgent, args.proxy)
-    elif engine == "bing":
-        all_emails = bing(domain, limit, userAgent, args.proxy)
-    elif engine == "yahoo":
-        all_emails = yahoo(domain, limit, userAgent, args.proxy)
-    elif engine == "google":
-        all_emails = google(domain, limit, userAgent, args.proxy)
+        for search_engine in plugins:
+            all_emails += plugins[search_engine]['search'](domain, limit, userAgent, args.proxy)
+    elif engine not in plugins:
+        print(red("Search engine plugin not found"))
+        sys.exit(3)
+    else:
+        msg, all_emails = plugins[engine]['search'](domain, limit, userAgent, args.proxy)
+        print(green(msg))
     all_emails = unique(all_emails)
     
     if not all_emails:
         print(red("No emails found"))
-        sys.exit(3)
+        sys.exit(4)
 
     msg = "\n\n[+] {} emails found:".format(len(all_emails))
     print(green(msg))

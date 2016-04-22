@@ -163,28 +163,28 @@ def engine_type(engine):
 ###################################################################
 
 def ask(domain, limit, userAgent, proxy):
-    print(green("[+] Searching in ASK..\n"))
+    print(green("\n[+] Searching in ASK..\n"))
     url = "http://www.ask.com/web?q=%40{word}"
     search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
     search.process()
     return search.get_emails()
         
 def bing(domain, limit, userAgent, proxy):
-    print(green("[+] Searching in Bing..\n"))
+    print(green("\n[+] Searching in Bing..\n"))
     url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
     search = SearchEngine(url, domain, limit, 0, 50, userAgent, proxy)
     search.process()
     return search.get_emails()
         
 def google(domain, limit, userAgent, proxy):
-    print(green("[+] Searching in Google..\n"))
+    print(green("\n[+] Searching in Google..\n"))
     url = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=%40"{word}"'
     search = SearchEngine(url, domain, limit, 0, 100, userAgent, proxy)
     search.process()
     return search.get_emails()
         
 def yahoo(domain, limit, userAgent, proxy):
-    print(green("[+] Searching in Yahoo..\n"))
+    print(green("\n[+] Searching in Yahoo..\n"))
     url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
     search = SearchEngine(url, domain, limit, 1, 100, userAgent, proxy)
     search.process()
@@ -238,7 +238,7 @@ if __name__ == '__main__':
     engine = args.engine
 
     if engine == "all":
-        print(green("[+] Searching everywhere..\n"))
+        print(green("[+] Searching everywhere.."))
         all_emails = (ask(domain, limit, userAgent, args.proxy) +
                       bing(domain, limit, userAgent, args.proxy) +
                       yahoo(domain, limit, userAgent, args.proxy) +
@@ -257,7 +257,7 @@ if __name__ == '__main__':
         print(red("No emails found"))
         sys.exit(3)
 
-    msg = "\n\n[+] {} mails found:".format(len(all_emails))
+    msg = "\n\n[+] {} emails found:".format(len(all_emails))
     print(green(msg))
     print(green("-" * len(msg)))
 
@@ -266,7 +266,7 @@ if __name__ == '__main__':
             
     if filename:
         try:
-            print(green("[+] Saving files..."))
+            print(green("\n[+] Saving files..."))
             with open(filename, 'w') as out_file:
                 for email in all_emails:
                     try:

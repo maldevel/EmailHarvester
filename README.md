@@ -1,6 +1,7 @@
 EmailHarvester
 ====
 * A tool to retrieve Domain email addresses from Search Engines
+* Check the [License](https://github.com/maldevel/EmailHarvester/blob/master/LICENSE)
 
 This project was inspired by:
 * theHarvester(https://github.com/laramies/theHarvester) from laramies.

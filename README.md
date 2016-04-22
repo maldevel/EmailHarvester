@@ -35,7 +35,7 @@ Usage
 =====
 ```
 usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
-                         [-u USER-AGENT] [-x PROXY]
+                         [-u USER-AGENT] [-x PROXY] [--noprint]
 
  _____                   _  _   _   _                                _
 |  ___|                 (_)| | | | | |                              | |
@@ -45,13 +45,13 @@ usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
 \____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_|
 
     A tool to retrieve Domain email addresses from Search Engines | @maldevel
-                                Version: 1.1.5
+                                Version: 1.1.6
 
 optional arguments:
   -h, --help            show this help message and exit
   -d DOMAIN, --domain DOMAIN
                         Domain to search.
-  -s FILE, --save FILE  Save the results into a TXT and XML file.
+  -s FILE, --save FILE  Save the results into a TXT and XML file (both).
   -e ENGINE, --engine ENGINE
                         Select search engine(google, bing, yahoo, ask, all).
   -l LIMIT, --limit LIMIT
@@ -60,6 +60,8 @@ optional arguments:
                         Set the User-Agent request header.
   -x PROXY, --proxy PROXY
                         Setup proxy server (example: http://127.0.0.1:8080)
+  --noprint             EmailHarvester will print discovered emails to terminal. 
+						It is possible to tell EmailHarvester not to print results to terminal with this option.
 ```
 
 

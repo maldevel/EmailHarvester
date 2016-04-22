@@ -28,7 +28,7 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 __maintainer__ = "maldevel"
 
 
@@ -214,7 +214,9 @@ if __name__ == '__main__':
     parser.add_argument("-l", '--limit', metavar='LIMIT', dest='limit', type=limit_type, default=100, help="Limit the number of results.")
     parser.add_argument('-u', '--user-agent', metavar='USER-AGENT', dest='uagent', type=str, help="Set the User-Agent request header.")
     parser.add_argument('-x', '--proxy', metavar='PROXY', dest='proxy', type=checkProxyUrl, help='Setup proxy server (example: http://127.0.0.1:8080)')
-    
+    parser.add_argument('--noprint', action='store_true', help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')
+
+
     if len(sys.argv) is 1:
         parser.print_help()
         sys.exit()
@@ -261,8 +263,9 @@ if __name__ == '__main__':
     print(green(msg))
     print(green("-" * len(msg)))
 
-    for emails in all_emails:
-        print(emails)
+    if not args.noprint:
+        for emails in all_emails:
+            print(emails)
             
     if filename:
         try:

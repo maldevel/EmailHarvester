@@ -81,8 +81,11 @@ class myparser:
 
 class EmailHarvester(object):
     
-    def __init__(self):
+    def __init__(self, userAgent, proxy):
         self.plugins = {}
+        self.proxy = proxy
+        self.userAgent = userAgent
+        
         path = "plugins/"
         plugins = {}
         
@@ -102,16 +105,14 @@ class EmailHarvester(object):
     def show_message(self, msg):
         print(green(msg))
         
-    def init_search(self, urlPattern, word, limit, counterInit, counterStep, userAgent, proxy):
+    def init_search(self, urlPattern, word, limit, counterInit, counterStep):
         self.results = ""
         self.totalresults = ""
-        self.userAgent = userAgent
         self.limit = int(limit)
         self.counter = int(counterInit)
         self.urlPattern = urlPattern
         self.step = int(counterStep)
         self.word = word
-        self.proxy = proxy
         
     def do_search(self):
         try:
@@ -232,19 +233,19 @@ if __name__ == '__main__':
     filename = args.filename or ""
     limit = args.limit        
     engine = args.engine
-    app = EmailHarvester()
+    app = EmailHarvester(userAgent, args.proxy)
     plugins = app.get_plugins()
 
     all_emails = []
     if engine == "all":
         print(green("[+] Searching everywhere.."))
         for search_engine in plugins:
-            all_emails += plugins[search_engine]['search'](domain, limit, userAgent, args.proxy)
+            all_emails += plugins[search_engine]['search'](domain, limit)
     elif engine not in plugins:
         print(red("Search engine plugin not found"))
         sys.exit(3)
     else:
-        msg, all_emails = plugins[engine]['search'](domain, limit, userAgent, args.proxy)
+        msg, all_emails = plugins[engine]['search'](domain, limit)
         print(green(msg))
     all_emails = unique(all_emails)
     

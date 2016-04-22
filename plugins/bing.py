@@ -25,10 +25,10 @@
 app_emailharvester = None
 
 
-def search(domain, limit, userAgent, proxy):
+def search(domain, limit):
     app_emailharvester.show_message("\n[+] Searching in Bing..\n")
     url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
-    app_emailharvester.init_search(url, domain, limit, 0, 50, userAgent, proxy)
+    app_emailharvester.init_search(url, domain, limit, 0, 50)
     app_emailharvester.process()
     return app_emailharvester.get_emails()
 

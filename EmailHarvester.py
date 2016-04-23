@@ -250,7 +250,9 @@ if __name__ == '__main__':
     plugins = app.get_plugins()
 
     all_emails = []
-    excluded = args.exclude.split(',')
+    excluded = []
+    if args.exclude:
+        excluded = args.exclude.split(',')
     if engine == "all":
         print(green("[+] Searching everywhere.."))
         for search_engine in plugins:

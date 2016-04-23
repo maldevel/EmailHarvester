@@ -80,8 +80,11 @@ Examples
 * ./EmailHarvester.py -d example.com -e twitter
 * ./EmailHarvester.py -d example.com -e googleplus
 
-**Search in all engines**
+**Search in all engines/sites**
 * ./EmailHarvester.py -d example.com -e all
+
+**Search in all engines/sites but exclude some**
+* ./EmailHarvester.py -d example.com -e all -r twitter,ask
 
 **Limit results**
 * ./EmailHarvester.py -d example.com -e all -l 200

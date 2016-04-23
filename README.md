@@ -64,6 +64,9 @@ optional arguments:
                         Setup proxy server (example: http://127.0.0.1:8080)
   --noprint             EmailHarvester will print discovered emails to terminal. 
 						It is possible to tell EmailHarvester not to print results to terminal with this option.
+  -r EXCLUDED_PLUGINS, --exclude EXCLUDED_PLUGINS
+                        Plugins to exclude when you choose 'all' for search engine (eg. '-r google,twitter')
+  -p, --list-plugins    List all available plugins.
 ```
 
 

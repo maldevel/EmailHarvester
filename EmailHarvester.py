@@ -170,11 +170,13 @@ def limit_type(x):
         return x
     raise argparse.ArgumentTypeError("Minimum results limit is 1.")
 
-def engine_type(engine):
-    engines = 'all ask bing google yahoo'.split() 
-    if engine in engines:
-        return engine
-    raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines)))
+#===============================================================================
+# def engine_type(engine):
+#     engines = 'all ask bing google yahoo'.split() 
+#     if engine in engines:
+#         return engine
+#     raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines)))
+#===============================================================================
 
 ###################################################################
 
@@ -201,7 +203,7 @@ if __name__ == '__main__':
     
     #(google, bing, yahoo, ask, all) needs to be fixed/scan plugins folder to show available search engines??
     parser.add_argument("-e", '--engine', action="store", metavar='ENGINE', dest='engine', 
-                        default="all", type=engine_type, help="Select search engine plugin(google, bing, yahoo, ask, all).")
+                        default="all", type=str, help="Select search engine plugin(google, bing, yahoo, ask, linkedin, all).")
     
     parser.add_argument("-l", '--limit', action="store", metavar='LIMIT', dest='limit', 
                         type=limit_type, default=100, help="Limit the number of results.")
@@ -245,8 +247,7 @@ if __name__ == '__main__':
         print(red("Search engine plugin not found"))
         sys.exit(3)
     else:
-        msg, all_emails = plugins[engine]['search'](domain, limit)
-        print(green(msg))
+        all_emails = plugins[engine]['search'](domain, limit)
     all_emails = unique(all_emails)
     
     if not all_emails:

@@ -48,11 +48,19 @@ def search(domain, limit):
     all_emails += app_emailharvester.get_emails()
     
     app_emailharvester.show_message("\n[+] Searching in Google + Linkedin..\n")
-    googleUrl = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Alinkedin.com+%40"{word}"'
+    googleUrl = 'http://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Alinkedin.com+"%40{word}"'
     app_emailharvester.init_search(googleUrl, domain, limit, 0, 100)
     app_emailharvester.process()
     all_emails += app_emailharvester.get_emails()
 
+    app_emailharvester.show_message("\n[+] Searching in Baidu + Linkedin..\n")
+    url = 'http://www.baidu.com/search/s?wd=site%3Alinkedin.com+"%40{word}"&pn={counter}'
+    app_emailharvester.init_search(url, domain, limit, 0, 10)
+    app_emailharvester.process()
+    all_emails += app_emailharvester.get_emails()
+
+    #dogpile seems to not support site:
+    
     return all_emails
 
 

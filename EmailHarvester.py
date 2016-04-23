@@ -251,7 +251,7 @@ if __name__ == '__main__':
     all_emails = unique(all_emails)
     
     if not all_emails:
-        print(red("No emails found"))
+        print(red("\nNo emails found!"))
         sys.exit(4)
 
     msg = "\n\n[+] {} emails found:".format(len(all_emails))

@@ -173,14 +173,6 @@ def limit_type(x):
         return x
     raise argparse.ArgumentTypeError("Minimum results limit is 1.")
 
-#===============================================================================
-# def engine_type(engine):
-#     engines = 'all ask bing google yahoo'.split() 
-#     if engine in engines:
-#         return engine
-#     raise argparse.ArgumentTypeError("Invalid search engine, try with: {}.".format(', '.join(engines)))
-#===============================================================================
-
 ###################################################################
 
 if __name__ == '__main__':

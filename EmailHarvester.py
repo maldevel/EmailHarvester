@@ -217,12 +217,27 @@ if __name__ == '__main__':
                         help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')
     parser.add_argument('-r', '--exclude', action="store", metavar='EXCLUDED_PLUGINS', dest="exclude",
                         type=str, default=None, help="Plugins to exclude when you choose 'all' for search engine (eg. '-r google,twitter')")
+    parser.add_argument('-p', '--list-plugins', action='store_true', dest='listplugins', 
+                        default=False, help='List all available plugins.')
     
     if len(sys.argv) is 1:
         parser.print_help()
         sys.exit()
 
     args = parser.parse_args()
+    
+    if args.listplugins:
+        path = "plugins/"
+        msg = "[+] Available plugins:"
+        print(green(msg))
+        print(green("-" * len(msg)))
+        sys.path.insert(0, path)
+        for f in os.listdir(path):
+            fname, ext = os.path.splitext(f)
+            if ext == '.py':
+                print(fname)
+        sys.exit(1)
+        
     if not args.domain:
         print(red("[-] Please specify a domain name to search."))
         sys.exit(2)

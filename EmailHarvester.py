@@ -28,7 +28,7 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.2.9"
+__version__ = "1.3.0"
 __maintainer__ = "maldevel"
 
 ################################
@@ -204,19 +204,20 @@ if __name__ == '__main__':
     parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename', 
                         default=None, type=str, help="Save the results into a TXT and XML file (both).")
     
-    #(google, bing, yahoo, ask, all) needs to be fixed/scan plugins folder to show available search engines??
     parser.add_argument("-e", '--engine', action="store", metavar='ENGINE', dest='engine', 
-                        default="all", type=str, help="Select search engine plugin(google, bing, yahoo, ask, linkedin, all).")
+                        default="all", type=str, help="Select search engine plugin(eg. '-e google').")
     
     parser.add_argument("-l", '--limit', action="store", metavar='LIMIT', dest='limit', 
                         type=limit_type, default=100, help="Limit the number of results.")
     parser.add_argument('-u', '--user-agent', action="store", metavar='USER-AGENT', dest='uagent', 
                         type=str, help="Set the User-Agent request header.")
     parser.add_argument('-x', '--proxy', action="store", metavar='PROXY', dest='proxy', 
-                        default=None, type=checkProxyUrl, help='Setup proxy server (example: http://127.0.0.1:8080)')
+                        default=None, type=checkProxyUrl, help="Setup proxy server (eg. '-x http://127.0.0.1:8080')")
     parser.add_argument('--noprint', action='store_true', default=False, 
                         help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')
-
+    parser.add_argument('-r', '--exclude', action="store", metavar='EXCLUDED_PLUGINS', dest="exclude",
+                        type=str, default=None, help="Plugins to exclude when you choose 'all' for search engine (eg. '-r google,twitter')")
+    
     if len(sys.argv) is 1:
         parser.print_help()
         sys.exit()
@@ -242,10 +243,12 @@ if __name__ == '__main__':
     plugins = app.get_plugins()
 
     all_emails = []
+    excluded = args.exclude.split(',')
     if engine == "all":
         print(green("[+] Searching everywhere.."))
         for search_engine in plugins:
-            all_emails += plugins[search_engine]['search'](domain, limit)
+            if search_engine not in excluded:
+                all_emails += plugins[search_engine]['search'](domain, limit)
     elif engine not in plugins:
         print(red("Search engine plugin not found"))
         sys.exit(3)

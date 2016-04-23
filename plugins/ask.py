@@ -21,22 +21,69 @@
     For more see the file 'LICENSE' for copying permission.
 """
 
-#config = None
+import requests
+import time
+import sys
+
+config = None
 app_emailharvester = None
 
 
+class AskSearch(object):
+    
+    def __init__(self, url, word, limit):
+        self.results = ""
+        self.totalresults = ""
+        self.limit = int(limit)
+        self.page = 1
+        self.url = url
+        self.word = word
+        self.proxy = config["proxy"]
+        self.userAgent = config["useragent"]
+        self.counter = 0
+        
+    def do_search(self):
+        try:
+            urly = self.url.format(page=str(self.page), word=self.word)
+            headers = {'User-Agent': self.userAgent}
+            if(self.proxy):
+                proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
+                r=requests.get(urly, headers=headers, proxies=proxies)
+            else:
+                r=requests.get(urly, headers=headers)
+                
+        except Exception as e:
+            print(e)
+            sys.exit(4)
+        
+        self.results = r.content.decode(r.encoding)
+        self.totalresults += self.results
+    
+    def process(self):
+        while (self.counter < self.limit):
+            self.do_search()
+            time.sleep(1)
+            self.counter += 10
+            self.page += 1
+            print("\tSearching " + str(self.counter) + " results...")
+            
+    def get_emails(self):
+        app_emailharvester.parser.extract(self.totalresults, self.word)
+        return app_emailharvester.parser.emails()
+    
+    
 def search(domain, limit):
     app_emailharvester.show_message("\n[+] Searching in ASK..\n")
-    url = "http://www.ask.com/web?q=%40{word}"
-    app_emailharvester.init_search(url, domain, limit, 0, 100)
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+    url = "http://www.ask.com/web?q=%40{word}&page={page}"
+    search = AskSearch(url, domain, limit)
+    search.process()
+    return search.get_emails()
 
 
 class Plugin:
-    def __init__(self, app):#, conf
+    def __init__(self, app, conf):
         global app_emailharvester, config
-        #config = conf
+        config = conf
         app.register_plugin('ask', {'search': search})
         app_emailharvester = app
         

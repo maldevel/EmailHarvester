@@ -26,9 +26,11 @@ app_emailharvester = None
 
 
 def search(domain, limit):
-    app_emailharvester.show_message("\n[+] Searching in Baidu..\n")
-    url = 'http://www.baidu.com/search/s?wd="%40{word}"&pn={counter}'
-    app_emailharvester.init_search(url, domain, limit, 0, 10)
+    app_emailharvester.show_message("\n[+] Searching in Google+..\n")
+    #search google+ only with google search engine
+    #who is gonna have google+ indexed better than google itself?
+    url = 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Aplus.google.com+intext:"Works at"+-inurl:photos+-inurl:about+-inurl:posts+-inurl:plusones+%40{word}'
+    app_emailharvester.init_search(url, domain, limit, 0, 100)
     app_emailharvester.process()
     return app_emailharvester.get_emails()
 
@@ -37,6 +39,6 @@ class Plugin:
     def __init__(self, app, conf):#
         global app_emailharvester, config
         #config = conf
-        app.register_plugin('baidu', {'search': search})
+        app.register_plugin('googleplus', {'search': search})
         app_emailharvester = app
         

@@ -50,10 +50,13 @@ if _platform == 'win32':
     colorama.init()
 
 class myparser:
-    def __init__(self, results, word):
+    
+    def __init__(self):
+        self.temp = []
+        
+    def extract(self, results, word):
             self.results = results
             self.word = word
-            self.temp = []
 
     def genericClean(self):
         for e in '''<KW> </KW> </a> <b> </b> </div> <em> </em> <p> </span>
@@ -85,7 +88,7 @@ class EmailHarvester(object):
         self.plugins = {}
         self.proxy = proxy
         self.userAgent = userAgent
-        
+        self.parser = myparser()
         path = "plugins/"
         plugins = {}
         
@@ -94,7 +97,7 @@ class EmailHarvester(object):
             fname, ext = os.path.splitext(f)
             if ext == '.py':
                 mod = __import__(fname)
-                plugins[fname] = mod.Plugin(self)
+                plugins[fname] = mod.Plugin(self, {'useragent':userAgent, 'proxy':proxy})
     
     def register_plugin(self, search_method, functions):
         self.plugins[search_method] = functions
@@ -105,18 +108,18 @@ class EmailHarvester(object):
     def show_message(self, msg):
         print(green(msg))
         
-    def init_search(self, urlPattern, word, limit, counterInit, counterStep):
+    def init_search(self, url, word, limit, counterInit, counterStep):
         self.results = ""
         self.totalresults = ""
         self.limit = int(limit)
         self.counter = int(counterInit)
-        self.urlPattern = urlPattern
+        self.url = url
         self.step = int(counterStep)
         self.word = word
         
     def do_search(self):
         try:
-            urly = self.urlPattern.format(counter=str(self.counter), word=self.word)
+            urly = self.url.format(counter=str(self.counter), word=self.word)
             headers = {'User-Agent': self.userAgent}
             if(self.proxy):
                 proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
@@ -139,8 +142,8 @@ class EmailHarvester(object):
             print("\tSearching " + str(self.counter) + " results...")
             
     def get_emails(self):
-        rawres = myparser(self.totalresults, self.word)
-        return rawres.emails()    
+        self.parser.extract(self.totalresults, self.word)
+        return self.parser.emails()    
     
 ###################################################################
 

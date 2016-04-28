@@ -24,7 +24,7 @@ Features
 * Define your own User-Agent string.
 * Use proxy server.
 * Plugins system.
-* Search in popular web sites using Search engines (Twitter, LinkedIn, Google+).
+* Search in popular web sites using Search engines (Twitter, LinkedIn, Google+, Github).
 
 
 Download/Installation

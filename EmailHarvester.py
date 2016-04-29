@@ -44,37 +44,6 @@ if _platform == 'win32':
     import colorama
     colorama.init()
 
-class EmailHarvester(object):
-
-    def __init__(self, userAgent, proxy, imported_plugins):
-        self.plugins = {}
-        self.proxy = proxy
-        self.userAgent = userAgent
-
-        for plugin in imported_plugins:
-            plugin_complete_import = "plugins.{0}".format(plugin)
-            mod = __import__(plugin_complete_import)
-            print(mod)
-            print(dir(mod))
-            self.register_plugin(mod.Plugin(self, {'useragent': userAgent, 'proxy': proxy}))
-            #mod.Plugin(self, {'useragent': userAgent, 'proxy': proxy})
-
-        #path = "plugins/"
-        #plugins = {}
-
-        #sys.path.insert(0, path)
-        #for f in os.listdir(path):
-        #    fname, ext = os.path.splitext(f)
-        #    if ext == '.py':
-        #        mod = __import__(fname)
-        #        plugins[fname] = mod.Plugin(self, {'useragent':userAgent, 'proxy':proxy})
-
-    def register_plugin(self, search_method, functions):
-        self.plugins[search_method] = functions
-
-    def get_plugins(self):
-        return self.plugins
-
 
 class Launcher():
     parser = None

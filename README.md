@@ -14,17 +14,18 @@ Requirements
 * termcolor
 * colorama
 * requests
+* validators
 
 
 Features
 =====
-* Retrieve Domain email addresses from Search Engines (Google, Bing, Yahoo, ASK, Baidu, Dogpile, Exalead).
+* Retrieve Domain email addresses from popular Search engines (Google, Bing, Yahoo, ASK, Baidu, Dogpile, Exalead).
 * Export results to txt and xml files.
 * Limit search results.
 * Define your own User-Agent string.
 * Use proxy server.
 * Plugins system.
-* Search in popular web sites using Search engines (Twitter, LinkedIn, Google+, Github).
+* Search in popular web sites using Search engines (Twitter, LinkedIn, Google+, Github, Instagram, Reddit).
 
 
 Download/Installation
@@ -47,7 +48,7 @@ usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
 \____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_|
 
     A tool to retrieve Domain email addresses from Search Engines | @maldevel
-                                Version: 1.3.0
+                                Version: 1.3.1
 
 optional arguments:
   -h, --help            show this help message and exit

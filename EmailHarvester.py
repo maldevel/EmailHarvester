@@ -28,22 +28,26 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 __maintainer__ = "maldevel"
 
 ################################
+
 import argparse
 import sys
 import time
 import requests
 import re
 import os
+import validators
 
 from termcolor import colored
 from argparse import RawTextHelpFormatter
 from sys import platform as _platform
 from urllib.parse import urlparse
+
 ################################
+
 
 if _platform == 'win32':
     import colorama
@@ -173,6 +177,12 @@ def limit_type(x):
         return x
     raise argparse.ArgumentTypeError("Minimum results limit is 1.")
 
+def checkDomain(value):
+    domain_checked = validators.domain(value)
+    if not domain_checked:
+        raise argparse.ArgumentTypeError('Invalid {} domain.'.format(value))
+    return value
+
 ###################################################################
 
 if __name__ == '__main__':
@@ -192,7 +202,7 @@ if __name__ == '__main__':
                                      formatter_class=RawTextHelpFormatter)
     
     parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain', 
-                        default=None, type=str, help="Domain to search.")
+                        default=None, type=checkDomain, help="Domain to search.")
     parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename', 
                         default=None, type=str, help="Save the results into a TXT and XML file (both).")
     

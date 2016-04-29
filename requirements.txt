@@ -1,3 +1,4 @@
 termcolor
 colorama
 requests
+validators

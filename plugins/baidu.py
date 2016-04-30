@@ -20,23 +20,24 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-#config = None
-app_emailharvester = None
+from core.plugin import Plugin
 
 
-def search(domain, limit):
-    app_emailharvester.show_message("\n[+] Searching in Baidu..\n")
+class BaiduPlugin(Plugin):
     url = 'http://www.baidu.com/search/s?wd="%40{word}"&pn={counter}'
-    app_emailharvester.init_search(url, domain, limit, 0, 10)
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+    start = 0
+    step = 10
+
+    def __init__(self, domain, limit, proxy, user_agent):
+        Plugin.__init__(self, url=self.url, word=domain,
+                        limit=limit, start=self.start, step=self.step,
+                        name=__name__, proxy=proxy, user_agent=user_agent)
+
+    def run(self):
+        self.process()
+        return self.get_emails()
 
 
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('baidu', {'search': search})
-        app_emailharvester = app
-        
+def start(domain, limit, proxy, user_agent):
+    plugin = BaiduPlugin(domain, limit, proxy, user_agent)
+    return plugin.run()

@@ -20,23 +20,24 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-#config = None
-app_emailharvester = None
+from core.plugin import Plugin
 
 
-def search(domain, limit):
-    app_emailharvester.show_message("\n[+] Searching in Yahoo..\n")
+class BingPlugin(Plugin):
     url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
-    app_emailharvester.init_search(url, domain, limit, 1, 100)
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+    start = 0
+    step = 100
+
+    def __init__(self, domain, limit, proxy, user_agent):
+        Plugin.__init__(self, url=self.url, word=domain,
+                        limit=limit, start=self.start, step=self.step,
+                        name=__name__, proxy=proxy, user_agent=user_agent)
+
+    def run(self):
+        self.process()
+        return self.get_emails()
 
 
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('yahoo', {'search': search})
-        app_emailharvester = app
-        
+def start(domain, limit, proxy, user_agent):
+    plugin = BingPlugin(domain, limit, proxy, user_agent)
+    return plugin.run()

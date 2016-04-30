@@ -20,54 +20,64 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-#config = None
-app_emailharvester = None
-
-
-def search(domain, limit):
-    all_emails = []
-    app_emailharvester.show_message("\n[+] Searching in Twitter..\n")
-
-    app_emailharvester.show_message("\n[+] Searching in Yahoo + Twitter..\n")
-    yahooUrl = 'http://search.yahoo.com/search?p=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}'
-    app_emailharvester.init_search(yahooUrl, domain, limit, 1, 100)
-    app_emailharvester.process()
-    all_emails += app_emailharvester.get_emails()
-    
-    app_emailharvester.show_message("\n[+] Searching in Bing + Twitter..\n")
-    bingUrl = 'http://www.bing.com/search?q=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&count=50&first={counter}'
-    app_emailharvester.init_search(bingUrl, domain, limit, 0, 50)
-    app_emailharvester.process()
-    all_emails += app_emailharvester.get_emails()
-    
-    app_emailharvester.show_message("\n[+] Searching in Google + Twitter..\n")
-    googleUrl = 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Atwitter.com+intitle:"on Twitter"+"%40{word}"'
-    app_emailharvester.init_search(googleUrl, domain, limit, 0, 100)
-    app_emailharvester.process()
-    all_emails += app_emailharvester.get_emails()
-
-    app_emailharvester.show_message("\n[+] Searching in Baidu + Twitter..\n")
-    url = 'http://www.baidu.com/search/s?wd=site%3Atwitter.com+intitle:"on Twitter"+"%40{word}"&pn={counter}'
-    app_emailharvester.init_search(url, domain, limit, 0, 10)
-    app_emailharvester.process()
-    all_emails += app_emailharvester.get_emails()
-
-    app_emailharvester.show_message("\n[+] Searching in Exalead + Twitter..\n")
-    url = 'http://www.exalead.com/search/web/results/?q=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&elements_per_page=10&start_index={counter}'
-    app_emailharvester.init_search(url, domain, limit, 0, 50)
-    app_emailharvester.process()
-    all_emails += app_emailharvester.get_emails()
-
-    #dogpile seems to not support site:
-    
-    return all_emails
+import time
+from core.plugin import Plugin
+from core.output import alert
+from core.output import message
 
 
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('twitter', {'search': search})
-        app_emailharvester = app
-        
+class TwitterPlugin(Plugin):
+    engines = [
+        {
+            "name": "yahoo",
+            "url": 'http://search.yahoo.com/search?p=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}',
+            "step": 100
+        },
+        {
+            "name": "bing",
+            "url": 'http://www.bing.com/search?q=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&count=50&first={counter}',
+            "step": 50
+        },
+        {
+            "name": "google",
+            "url": 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Atwitter.com+intitle:"on Twitter"+"%40{word}"',
+            "step": 100
+        },
+        {
+            "name": "baidu",
+            "url": 'http://www.baidu.com/search/s?wd=site%3Atwitter.com+intitle:"on Twitter"+"%40{word}"&pn={counter}',
+            "step": 10
+        },
+        {
+            "name": "exalead",
+            "url": 'http://www.exalead.com/search/web/results/?q=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&elements_per_page=10&start_index={counter}',
+            "step": 50
+        },
+    ]
+
+    def __init__(self, domain, limit, proxy, user_agent):
+        Plugin.__init__(self, url=self.url, word=domain,
+                        limit=limit, start=self.start, step=self.step,
+                        name=__name__, proxy=proxy, user_agent=user_agent)
+
+    def process(self):
+        while self.start < self.limit:
+            self.search()
+            time.sleep(1)
+            self.start += self.step
+            message("\tSearching {0} results...".format(self.start))
+
+    def run(self):
+        results = []
+        for engine in self.engines:
+            self.initialize(engine)
+            alert("\n[+] Searching in {0} + Twitter..\n".format(engine["name"]))
+            self.process()
+            results.extend(self.get_emails())
+
+        return results
+
+
+def start(domain, limit, proxy, user_agent):
+    plugin = TwitterPlugin(domain, limit, proxy, user_agent)
+    return plugin.run()

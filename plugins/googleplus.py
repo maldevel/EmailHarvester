@@ -20,25 +20,24 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-#config = None
-app_emailharvester = None
+from core.plugin import Plugin
 
 
-def search(domain, limit):
-    app_emailharvester.show_message("\n[+] Searching in Google+..\n")
-    #search google+ only with google search engine
-    #who is gonna have google+ indexed better than google itself?
+class BingPlugin(Plugin):
     url = 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Aplus.google.com+intext:"Works at"+-inurl:photos+-inurl:about+-inurl:posts+-inurl:plusones+%40{word}'
-    app_emailharvester.init_search(url, domain, limit, 0, 100)
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+    start = 0
+    step = 100
+
+    def __init__(self, domain, limit, proxy, user_agent):
+        Plugin.__init__(self, url=self.url, word=domain,
+                        limit=limit, start=self.start, step=self.step,
+                        name=__name__, proxy=proxy, user_agent=user_agent)
+
+    def run(self):
+        self.process()
+        return self.get_emails()
 
 
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('googleplus', {'search': search})
-        app_emailharvester = app
-        
+def start(domain, limit, proxy, user_agent):
+    plugin = BingPlugin(domain, limit, proxy, user_agent)
+    return plugin.run()

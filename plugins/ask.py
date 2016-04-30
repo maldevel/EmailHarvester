@@ -20,70 +20,55 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-import requests
 import time
+import requests
 import sys
+from core.plugin import Plugin
+from core.output import error
+from core.output import message
+from core.output import alert
 
-config = None
-app_emailharvester = None
 
-
-class AskSearch(object):
-    
-    def __init__(self, url, word, limit):
-        self.results = ""
-        self.totalresults = ""
-        self.limit = int(limit)
-        self.page = 1
-        self.url = url
-        self.word = word
-        self.proxy = config["proxy"]
-        self.userAgent = config["useragent"]
-        self.counter = 0
-        
-    def do_search(self):
-        try:
-            urly = self.url.format(page=str(self.page), word=self.word)
-            headers = {'User-Agent': self.userAgent}
-            if(self.proxy):
-                proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
-                r=requests.get(urly, headers=headers, proxies=proxies)
-            else:
-                r=requests.get(urly, headers=headers)
-                
-        except Exception as e:
-            print(e)
-            sys.exit(4)
-        
-        self.results = r.content.decode(r.encoding)
-        self.totalresults += self.results
-    
-    def process(self):
-        while (self.counter < self.limit):
-            self.do_search()
-            time.sleep(1)
-            self.counter += 10
-            self.page += 1
-            print("\tSearching " + str(self.counter) + " results...")
-            
-    def get_emails(self):
-        app_emailharvester.parser.extract(self.totalresults, self.word)
-        return app_emailharvester.parser.emails()
-    
-    
-def search(domain, limit):
-    app_emailharvester.show_message("\n[+] Searching in ASK..\n")
+class AskPlugin(Plugin):
     url = "http://www.ask.com/web?q=%40{word}&page={page}"
-    search = AskSearch(url, domain, limit)
-    search.process()
-    return search.get_emails()
+    step = 10
+    page = 1
+
+    def __init__(self, domain, limit, proxy, user_agent):
+        Plugin.__init__(self, url=self.url, word=domain,
+                        limit=limit, start=self.start, step=self.step,
+                        name=__name__, proxy=proxy, user_agent=user_agent)
+
+    def search(self):
+        try:
+            url = self.url.format(page=str(self.page), word=self.word)
+            headers = {'User-Agent': self.user_agent}
+            if self.proxy:
+                proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
+                req = requests.get(url, headers=headers, proxies=proxies)
+            else:
+                req = requests.get(url, headers=headers)
+
+        except Exception as e:
+            error(e)
+            sys.exit(4)
+
+        self.results += req.content.decode(req.encoding)
+
+    def process(self):
+        alert("\n[+] Searching in {0}..\n".format(self.name))
+        while self.start < self.limit:
+            self.search()
+            time.sleep(1)
+            self.start += self.step
+            self.page += 1
+            message("\tSearching {0} results...".format(self.start))
+
+    def run(self):
+        self.process()
+        return self.get_emails()
 
 
-class Plugin:
-    def __init__(self, app, conf):
-        global app_emailharvester, config
-        config = conf
-        app.register_plugin('ask', {'search': search})
-        app_emailharvester = app
-        
+def start(domain, limit, proxy, user_agent):
+    plugin = AskPlugin(domain, limit, proxy, user_agent)
+    return plugin.run()

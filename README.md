@@ -11,7 +11,7 @@ This project was inspired by:
 
 Requirements
 =====
-* Python 3.x
+* Python 2.x / 3.x
 * termcolor
 * colorama
 * requests
@@ -49,7 +49,7 @@ usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
 \____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_|
 
     A tool to retrieve Domain email addresses from Search Engines | @maldevel
-                                Version: 1.3.1
+                                Version: 1.4.0
 
 optional arguments:
   -h, --help            show this help message and exit

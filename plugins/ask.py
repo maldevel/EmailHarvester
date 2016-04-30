@@ -24,10 +24,19 @@
 import requests
 import time
 import sys
+from termcolor import colored
 
 config = None
 app_emailharvester = None
 
+def green(text):
+    return colored(text, 'green', attrs=['bold'])
+
+def red(text):
+    return colored(text, 'red', attrs=['bold'])
+
+def cyan(text):
+    return colored(text, 'cyan', attrs=['bold'])
 
 class AskSearch(object):
     
@@ -65,7 +74,7 @@ class AskSearch(object):
             time.sleep(1)
             self.counter += 10
             self.page += 1
-            print("\tSearching " + str(self.counter) + " results...")
+            print(green("[+] Searching in ASK:") + cyan(" {} results".format(str(self.counter))))
             
     def get_emails(self):
         app_emailharvester.parser.extract(self.totalresults, self.word)
@@ -73,7 +82,6 @@ class AskSearch(object):
     
     
 def search(domain, limit):
-    app_emailharvester.show_message("\n[+] Searching in ASK..\n")
     url = "http://www.ask.com/web?q=%40{word}&page={page}"
     search = AskSearch(url, domain, limit)
     search.process()

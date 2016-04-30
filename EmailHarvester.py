@@ -28,7 +28,7 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 __maintainer__ = "maldevel"
 
 ################################
@@ -93,6 +93,7 @@ class EmailHarvester(object):
         self.proxy = proxy
         self.userAgent = userAgent
         self.parser = myparser()
+        self.activeEngine = "None"
         path = "plugins/"
         plugins = {}
         
@@ -112,7 +113,7 @@ class EmailHarvester(object):
     def show_message(self, msg):
         print(green(msg))
         
-    def init_search(self, url, word, limit, counterInit, counterStep):
+    def init_search(self, url, word, limit, counterInit, counterStep, engineName):
         self.results = ""
         self.totalresults = ""
         self.limit = int(limit)
@@ -120,6 +121,7 @@ class EmailHarvester(object):
         self.url = url
         self.step = int(counterStep)
         self.word = word
+        self.activeEngine = engineName
         
     def do_search(self):
         try:
@@ -143,11 +145,11 @@ class EmailHarvester(object):
             self.do_search()
             time.sleep(1)
             self.counter += self.step
-            print("\tSearching " + str(self.counter) + " results...")
+            print(green("[+] Searching in {}:".format(self.activeEngine)) + cyan(" {} results".format(str(self.counter))))
             
     def get_emails(self):
         self.parser.extract(self.totalresults, self.word)
-        return self.parser.emails()    
+        return self.parser.emails()
     
 ###################################################################
 
@@ -159,6 +161,9 @@ def green(text):
 
 def red(text):
     return colored(text, 'red', attrs=['bold'])
+
+def cyan(text):
+    return colored(text, 'cyan', attrs=['bold'])
 
 def unique(data):
         return list(set(data))
@@ -230,14 +235,12 @@ if __name__ == '__main__':
     
     if args.listplugins:
         path = "plugins/"
-        msg = "[+] Available plugins:"
-        print(green(msg))
-        print(green("-" * len(msg)))
+        print(green("[+] Available plugins"))
         sys.path.insert(0, path)
         for f in os.listdir(path):
             fname, ext = os.path.splitext(f)
             if ext == '.py':
-                print(fname)
+                print(green("[+] Plugin: ") + cyan(fname))
         sys.exit(1)
         
     if not args.domain:
@@ -248,10 +251,10 @@ if __name__ == '__main__':
     userAgent = (args.uagent or
                  "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
     
-    print("User-Agent in use: {}".format(yellow(userAgent)))
+    print(green("[+] User-Agent in use: ") + cyan(userAgent))
     
     if args.proxy:
-        print("Proxy server in use: {}".format(yellow(args.proxy.scheme + "://" + args.proxy.netloc)))
+        print(green("[+] Proxy server in use: ") + cyan(args.proxy.scheme + "://" + args.proxy.netloc))
 
     filename = args.filename or ""
     limit = args.limit        
@@ -264,24 +267,22 @@ if __name__ == '__main__':
     if args.exclude:
         excluded = args.exclude.split(',')
     if engine == "all":
-        print(green("[+] Searching everywhere.."))
+        print(green("[+] Searching everywhere"))
         for search_engine in plugins:
             if search_engine not in excluded:
                 all_emails += plugins[search_engine]['search'](domain, limit)
     elif engine not in plugins:
-        print(red("Search engine plugin not found"))
+        print(red("[-] Search engine plugin not found"))
         sys.exit(3)
     else:
         all_emails = plugins[engine]['search'](domain, limit)
     all_emails = unique(all_emails)
     
     if not all_emails:
-        print(red("\nNo emails found!"))
+        print(red("[-] No emails found"))
         sys.exit(4)
 
-    msg = "\n\n[+] {} emails found:".format(len(all_emails))
-    print(green(msg))
-    print(green("-" * len(msg)))
+    print(green("[+] Emails found: ") + cyan(len(all_emails)))
 
     if not args.noprint:
         for emails in all_emails:
@@ -289,15 +290,15 @@ if __name__ == '__main__':
             
     if filename:
         try:
-            print(green("\n[+] Saving files..."))
+            print(green("[+] Saving results to files"))
             with open(filename, 'w') as out_file:
                 for email in all_emails:
                     try:
                         out_file.write(email + "\n")
                     except:
-                        print(red("Exception " + email))
+                        print(red("[-] Exception: " + email))
         except Exception as e:
-            print(red("Error saving TXT file: " + e))
+            print(red("[-] Error saving TXT file: " + e))
             
         try:
             filename = filename.split(".")[0] + ".xml"
@@ -306,7 +307,7 @@ if __name__ == '__main__':
                 for email in all_emails:
                     out_file.write('<email>{}</email>'.format(email))
                 out_file.write('</EmailHarvester>')
-            print(green("Files saved!"))
+            print(green("[+] Files saved"))
         except Exception as er:
-            print(red("Error saving XML file: " + er))
+            print(red("[-] Error saving XML file: " + er))
 

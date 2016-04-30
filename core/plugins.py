@@ -15,7 +15,7 @@ class Plugins(list):
 
     def load(self):
         for importer, modname, ispkg in pkgutil.iter_modules(plugins.__path__):
-            if not ispkg and "plugin" not in modname:
+            if not ispkg:
                 self.append(modname)
                 __all__.append(modname)
 

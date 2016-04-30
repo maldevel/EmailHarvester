@@ -1,6 +1,6 @@
 __author__ = 'herve.beraud'
 
-default = """
+DEFAULT = """
 
  _____                   _  _   _   _                                _
 |  ___|                 (_)| | | | | |                              | |

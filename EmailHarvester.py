@@ -23,21 +23,18 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-
-
-################################
-import os
-
 from sys import platform as _platform
 
-from core import colors
-from core.output import save
-from core.output import stdout_print
+from core.output import File
+from core.output import message
+from core.output import alert
+from core.output import warning
+from core.output import error
 import core.parameters as parameters
 from core.plugins import *
 from core.plugins import Plugins
 from core.commons import unique
+import core.settings as settings
 
 
 if _platform == 'win32':
@@ -45,7 +42,7 @@ if _platform == 'win32':
     colorama.init()
 
 
-class Launcher():
+class Launcher:
     parser = None
     args = None
     domain = None
@@ -56,7 +53,7 @@ class Launcher():
     engine = None
     app = None
     plugins = None
-    all_emails = []
+    results = []
     excluded = []
 
     def __init__(self):
@@ -77,21 +74,21 @@ class Launcher():
 
     def setup_domain(self):
         if not self.args.domain:
-            print(colors.red("[-] Please specify a domain name to search."))
+            error("[-] Please specify a domain name to search.")
             sys.exit(2)
         self.domain = self.args.domain
 
     def setup_user_agent(self):
-        self.user_agent = (self.args.uagent or
-                     "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
-
-        print("User-Agent in use: {}".format(colors.yellow(self.user_agent)))
+        self.user_agent = (self.args.uagent or settings.DFAULT_USER_AGENT)
+        message("User-Agent in use: {}".format(self.user_agent))
 
     def setup_proxy(self):
         if self.args.proxy:
-            print("Proxy server in use: {}".format(
-                colors.yellow(self.args.proxy.scheme + "://" + self.args.proxy.netloc))
+            msg = "Proxy server in use: {0}://{1}".format(
+                self.args.proxy.scheme,
+                self.args.proxy.netloc
             )
+            warning(msg)
         self.proxy = self.args.proxy
 
     def setup_exclude(self):
@@ -100,41 +97,46 @@ class Launcher():
 
     def search(self):
         if self.engine == "all":
-            print(colors.green("[+] Searching everywhere.."))
+            alert("[+] Searching everywhere..")
             for search_engine in self.plugins:
                 if search_engine in self.excluded:
                     continue
-                self.all_emails += self.plugins.execute(search_engine,
-                                                   self.domain,
-                                                   self.limit,
-                                                   self.proxy,
-                                                   self.user_agent)
+                self.results += self.plugins.execute(search_engine,
+                                                     self.domain,
+                                                     self.limit,
+                                                     self.proxy,
+                                                     self.user_agent)
         elif self.engine not in self.plugins:
-            print(colors.red("Search engine plugin not found"))
+            error("Search engine plugin not found")
             sys.exit(3)
         else:
-            self.all_emails = self.plugins.execute(self.engine,
-                                                   self.domain,
-                                                   self.limit,
-                                                   self.proxy,
-                                                   self.user_agent)
+            self.results = self.plugins.execute(self.engine,
+                                                self.domain,
+                                                self.limit,
+                                                self.proxy,
+                                                self.user_agent)
+        self.results = unique(self.results)
 
-    def run(self):
-        print(self.plugins)
-
-        self.search()
-        if not self.all_emails:
-            print(colors.red("\nNo emails found!"))
+    def display_results(self):
+        if not self.results:
+            error("\nNo emails found!")
             sys.exit(4)
 
-        msg = "\n\n[+] {} emails found:".format(len(self.all_emails))
-        print(colors.green(msg))
-        print(colors.green("-" * len(msg)))
+        alert("\n\n[+] {} emails found:".format(len(self.results)), underline=True)
 
         if not self.args.noprint:
-            stdout_print(unique(self.all_emails))
+            message(self.results)
 
-        save(self.filename, unique(self.all_emails))
+    def save(self):
+        if not self.filename:
+            return
+        save_file = File(self.filename, self.results)
+        save_file.save()
+
+    def run(self):
+        self.search()
+        self.display_results()
+        self.save()
 
 
 if __name__ == '__main__':

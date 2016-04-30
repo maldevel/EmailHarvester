@@ -3,7 +3,7 @@ __author__ = 'herve.beraud'
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
-from core.splash import default
+from core.settings import SPLASH_SCREEN
 from core import colors
 from core import checks
 from core import credits
@@ -17,7 +17,7 @@ def limit_type(x):
 
 
 def setup():
-    splash_screen = default.format(colors.red('Version'), colors.yellow(credits.__version__))
+    splash_screen = SPLASH_SCREEN.format(colors.red('Version'), colors.yellow(credits.__version__))
 
     parser = argparse.ArgumentParser(description=splash_screen,
                                      formatter_class=RawTextHelpFormatter)

@@ -20,7 +20,7 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-from plugins.plugin import Plugin
+from core.plugin import Plugin
 
 
 class BingPlugin(Plugin):
@@ -30,8 +30,12 @@ class BingPlugin(Plugin):
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,
-                        limit=limit,start=self.start, step=self.step,
+                        limit=limit, start=self.start, step=self.step,
                         name=__name__, proxy=proxy, user_agent=user_agent)
+
+    def run(self):
+        self.process()
+        return self.get_emails()
 
 
 def start(domain, limit, proxy, user_agent):

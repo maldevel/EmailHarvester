@@ -1,5 +1,6 @@
 EmailHarvester
 ====
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc502b9b11744774a5b8c80f4c9f2ffc)](https://www.codacy.com/app/herveberaud-pro/EmailHarvester?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=4383/EmailHarvester&amp;utm_campaign=Badge_Grade)
 * A tool to retrieve Domain email addresses from Search Engines
 * Check the [License](https://github.com/maldevel/EmailHarvester/blob/master/LICENSE)
 

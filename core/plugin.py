@@ -29,6 +29,11 @@ class Plugin:
         self.proxy = proxy
         self.user_agent = user_agent
 
+    def initialize(self, engine):
+        self.url = engine['url']
+        self.start = 0
+        self.step = engine["step"]
+
     def search(self):
         try:
             url = self.url.format(counter=str(self.start), word=self.word)

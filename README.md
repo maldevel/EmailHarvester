@@ -11,7 +11,7 @@ This project was inspired by:
 
 Requirements
 =====
-* Python 2.x / 3.x
+* Python 3.x
 * termcolor
 * colorama
 * requests

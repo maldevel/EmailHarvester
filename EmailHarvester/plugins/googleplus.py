@@ -20,13 +20,13 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-from core.plugin import Plugin
+from EmailHarvester.core.plugin import Plugin
 
 
 class BingPlugin(Plugin):
-    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
+    url = 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Aplus.google.com+intext:"Works at"+-inurl:photos+-inurl:about+-inurl:posts+-inurl:plusones+%40{word}'
     start = 0
-    step = 50
+    step = 100
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,

@@ -20,49 +20,18 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-import time
-import requests
-import sys
-from core.plugin import Plugin
-from core.output import error
-from core.output import message
-from core.output import alert
+from EmailHarvester.core.plugin import Plugin
 
 
-class AskPlugin(Plugin):
-    url = "http://www.ask.com/web?q=%40{word}&page={page}"
-    step = 10
-    page = 1
+class GooglePlugin(Plugin):
+    url = 'https://www.google.com/search?num=100&start={counter}&hl=en&q="%40{word}"'
+    start = 0
+    step = 100
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,
                         limit=limit, start=self.start, step=self.step,
                         name=__name__, proxy=proxy, user_agent=user_agent)
-
-    def search(self):
-        try:
-            url = self.url.format(page=str(self.page), word=self.word)
-            headers = {'User-Agent': self.user_agent}
-            if self.proxy:
-                proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
-                req = requests.get(url, headers=headers, proxies=proxies)
-            else:
-                req = requests.get(url, headers=headers)
-
-        except Exception as e:
-            error(e)
-            sys.exit(4)
-
-        self.results += req.content.decode(req.encoding)
-
-    def process(self):
-        alert("\n[+] Searching in {0}..\n".format(self.name))
-        while self.start < self.limit:
-            self.search()
-            time.sleep(1)
-            self.start += self.step
-            self.page += 1
-            message("\tSearching {0} results...".format(self.start))
 
     def run(self):
         self.process()
@@ -70,5 +39,5 @@ class AskPlugin(Plugin):
 
 
 def start(domain, limit, proxy, user_agent):
-    plugin = AskPlugin(domain, limit, proxy, user_agent)
+    plugin = GooglePlugin(domain, limit, proxy, user_agent)
     return plugin.run()

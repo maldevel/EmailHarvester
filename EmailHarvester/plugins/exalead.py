@@ -20,13 +20,13 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-from core.plugin import Plugin
+from EmailHarvester.core.plugin import Plugin
 
 
-class BaiduPlugin(Plugin):
-    url = 'http://www.baidu.com/search/s?wd="%40{word}"&pn={counter}'
+class ExaleadPlugin(Plugin):
+    url = "http://www.exalead.com/search/web/results/?q=%40{word}&elements_per_page=10&start_index={counter}"
     start = 0
-    step = 10
+    step = 50
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,
@@ -39,5 +39,5 @@ class BaiduPlugin(Plugin):
 
 
 def start(domain, limit, proxy, user_agent):
-    plugin = BaiduPlugin(domain, limit, proxy, user_agent)
+    plugin = ExaleadPlugin(domain, limit, proxy, user_agent)
     return plugin.run()

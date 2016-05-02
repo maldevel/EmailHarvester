@@ -3,10 +3,12 @@ __author__ = 'herve.beraud'
 import argparse
 from argparse import RawTextHelpFormatter
 import sys
-from core.settings import SPLASH_SCREEN
-from core import colors
-from core import checks
-from core import credits
+from EmailHarvester.core.settings import SPLASH_SCREEN
+from EmailHarvester.core.settings import __version__ as VERSION
+from EmailHarvester.core.colors import red
+from EmailHarvester.core.colors import yellow
+from EmailHarvester.core.checks import check_proxy_url
+from EmailHarvester.core.checks import check_domain
 
 
 def limit_type(x):
@@ -17,13 +19,13 @@ def limit_type(x):
 
 
 def setup():
-    splash_screen = SPLASH_SCREEN.format(colors.red('Version'), colors.yellow(credits.__version__))
+    splash_screen = SPLASH_SCREEN.format(red('Version'), yellow(VERSION))
 
     parser = argparse.ArgumentParser(description=splash_screen,
                                      formatter_class=RawTextHelpFormatter)
 
     parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain',
-                        default=None, type=checks.checkDomain, help="Domain to search.")
+                        default=None, type=check_domain, help="Domain to search.")
 
     parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename',
                         default=None, type=str, help="Save the results into a TXT and XML file (both).")
@@ -38,7 +40,7 @@ def setup():
                         type=str, help="Set the User-Agent request header.")
 
     parser.add_argument('-x', '--proxy', action="store", metavar='PROXY', dest='proxy',
-                        default=None, type=checks.checkProxyUrl, help="Setup proxy server (eg. '-x http://127.0.0.1:8080')")
+                        default=None, type=check_proxy_url, help="Setup proxy server (eg. '-x http://127.0.0.1:8080')")
 
     parser.add_argument('--noprint', action='store_true', default=False,
                         help='EmailHarvester will print discovered emails to terminal. It is possible to tell EmailHarvester not to print results to terminal with this option.')

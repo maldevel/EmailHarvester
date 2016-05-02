@@ -1,5 +1,8 @@
 __author__ = 'herve.beraud'
-from core import colors
+from EmailHarvester.core.colors import green
+from EmailHarvester.core.colors import yellow
+from EmailHarvester.core.colors import red
+from EmailHarvester.core.colors import white
 
 
 class File:
@@ -42,7 +45,7 @@ def console(all_emails):
         print(emails)
 
 
-def message(msg, color=colors.white, underline=False):
+def message(msg, color=white, underline=False):
     if list is type(msg):
         for line in msg:
             print(color(line))
@@ -53,12 +56,12 @@ def message(msg, color=colors.white, underline=False):
 
 
 def alert(msg, underline=False):
-    message(msg, color=colors.green, underline=underline)
+    message(msg, color=green, underline=underline)
 
 
 def warning(msg, underline=False):
-    message(msg, color=colors.yellow, underline=underline)
+    message(msg, color=yellow, underline=underline)
 
 
 def error(msg, underline=False):
-    message(msg, color=colors.red, underline=underline)
+    message(msg, color=red, underline=underline)

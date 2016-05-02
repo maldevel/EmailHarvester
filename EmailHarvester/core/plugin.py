@@ -2,10 +2,10 @@ __author__ = 'herve'
 import sys
 import time
 import requests
-from core.parser import Default
-from core.output import alert
-from core.output import error
-from core.output import message
+from EmailHarvester.core.parser import Default
+from EmailHarvester.core.output import alert
+from EmailHarvester.core.output import error
+from EmailHarvester.core.output import message
 
 
 class Plugin:

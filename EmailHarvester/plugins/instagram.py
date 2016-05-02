@@ -21,9 +21,9 @@
     For more see the file 'LICENSE' for copying permission.
 """
 import time
-from core.plugin import Plugin
-from core.output import alert
-from core.output import message
+from EmailHarvester.core.plugin import Plugin
+from EmailHarvester.core.output import alert
+from EmailHarvester.core.output import message
 
 
 class InstagramPlugin(Plugin):

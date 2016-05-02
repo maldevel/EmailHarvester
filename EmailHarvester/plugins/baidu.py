@@ -20,13 +20,13 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-from core.plugin import Plugin
+from EmailHarvester.core.plugin import Plugin
 
 
-class BingPlugin(Plugin):
-    url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
+class BaiduPlugin(Plugin):
+    url = 'http://www.baidu.com/search/s?wd="%40{word}"&pn={counter}'
     start = 0
-    step = 100
+    step = 10
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,
@@ -39,5 +39,5 @@ class BingPlugin(Plugin):
 
 
 def start(domain, limit, proxy, user_agent):
-    plugin = BingPlugin(domain, limit, proxy, user_agent)
+    plugin = BaiduPlugin(domain, limit, proxy, user_agent)
     return plugin.run()

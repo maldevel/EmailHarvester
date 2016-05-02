@@ -1,45 +1,15 @@
-#!/usr/bin/env python3
-# encoding: UTF-8
-
-"""
-    This file is part of EmailHarvester
-    Copyright (C) 2016 @maldevel
-    https://github.com/maldevel/EmailHarvester
-    
-    EmailHarvester - A tool to retrieve Domain email addresses from Search Engines.
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    For more see the file 'LICENSE' for copying permission.
-"""
-from sys import platform as _platform
-
-from core.output import File
-from core.output import message
-from core.output import alert
-from core.output import warning
-from core.output import error
-import core.parameters as parameters
-from core.plugins import *
-from core.plugins import Plugins
-from core.commons import unique
-import core.settings as settings
-
-
-if _platform == 'win32':
-    import colorama
-    colorama.init()
+__author__ = 'herve.beraud'
+import sys
+from EmailHarvester.core.output import File
+from EmailHarvester.core.output import warning
+from EmailHarvester.core.output import error
+from EmailHarvester.core.output import message
+from EmailHarvester.core.output import alert
+from EmailHarvester.core.parameters import setup as parameters_setup
+from EmailHarvester.core.plugins import *
+from EmailHarvester.core.plugins import Plugins
+from EmailHarvester.core.commons import unique
+from EmailHarvester.core.settings import DFAULT_USER_AGENT
 
 
 class Launcher:
@@ -57,7 +27,7 @@ class Launcher:
     excluded = []
 
     def __init__(self):
-        self.parser = parameters.setup()
+        self.parser = parameters_setup()
         self.args = self.parser.parse_args()
         self.setup_plugins()
         self.setup_domain()
@@ -79,8 +49,8 @@ class Launcher:
         self.domain = self.args.domain
 
     def setup_user_agent(self):
-        self.user_agent = (self.args.uagent or settings.DFAULT_USER_AGENT)
-        message("User-Agent in use: {}".format(self.user_agent))
+        self.user_agent = (self.args.uagent or DFAULT_USER_AGENT)
+        warning("User-Agent in use: {}".format(self.user_agent))
 
     def setup_proxy(self):
         if self.args.proxy:
@@ -137,11 +107,3 @@ class Launcher:
         self.search()
         self.display_results()
         self.save()
-
-
-if __name__ == '__main__':
-    launcher = Launcher()
-    launcher.run()
-    
-
-

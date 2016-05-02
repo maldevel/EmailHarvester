@@ -48,7 +48,7 @@ python setup.py install
 Usage
 =====
 ```
-usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
+usage: emailharvester [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
                          [-u USER-AGENT] [-x PROXY] [--noprint]
 
  _____                   _  _   _   _                                _
@@ -85,27 +85,27 @@ optional arguments:
 Examples
 =====
 **Search in Google**
-* ./EmailHarvester.py -d example.com -e google
+* emailharvester -d example.com -e google
 
 **Search in site using Search engines**
-* ./EmailHarvester.py -d example.com -e linkedin
-* ./EmailHarvester.py -d example.com -e twitter
-* ./EmailHarvester.py -d example.com -e googleplus
+* emailharvester -d example.com -e linkedin
+* emailharvester -d example.com -e twitter
+* emailharvester -d example.com -e googleplus
 
 **Search in all engines/sites**
-* ./EmailHarvester.py -d example.com -e all
+* emailharvester -d example.com -e all
 
 **Search in all engines/sites but exclude some**
-* ./EmailHarvester.py -d example.com -e all -r twitter,ask
+* emailharvester -d example.com -e all -r twitter,ask
 
 **Limit results**
-* ./EmailHarvester.py -d example.com -e all -l 200
+* emailharvester -d example.com -e all -l 200
 
 **Export emails**
-* ./EmailHarvester.py -d example.com -e all -l 200 -s emails.txt
+* emailharvester -d example.com -e all -l 200 -s emails.txt
 
 **Custom User-Agent string**
-* ./EmailHarvester.py -d example.com -e all -u "MyUserAgentString 1.0"
+* emailharvester -d example.com -e all -u "MyUserAgentString 1.0"
 
 **Proxy Server**
-* ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080 
+* emailharvester -d example.com -e all -x http://127.0.0.1:8080

@@ -1,8 +1,8 @@
 __author__ = 'herve.beraud'
 import sys
-from core.output import alert
-from core.output import message
-import plugins
+from EmailHarvester.core.output import alert
+from EmailHarvester.core.output import message
+import EmailHarvester.plugins as plugins
 import pkgutil
 
 __all__ = []
@@ -29,6 +29,6 @@ class Plugins(list):
         return self.run(name, domain, limit, proxy, user_agent)
 
     def run(self, name, domain, limit, proxy, user_agent):
-        plugin_path = "plugins.{0}".format(name)
+        plugin_path = "EmailHarvester.plugins.{0}".format(name)
         module = __import__(plugin_path, globals(), locals(), ['object'], 0)
         return module.start(domain, limit, proxy, user_agent)

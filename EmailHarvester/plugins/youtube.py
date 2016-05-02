@@ -21,36 +21,36 @@
     For more see the file 'LICENSE' for copying permission.
 """
 import time
-from core.plugin import Plugin
-from core.output import alert
-from core.output import message
+from EmailHarvester.core.plugin import Plugin
+from EmailHarvester.core.output import alert
+from EmailHarvester.core.output import message
 
 
-class TwitterPlugin(Plugin):
+class YoutubePlugin(Plugin):
     engines = [
         {
             "name": "yahoo",
-            "url": 'http://search.yahoo.com/search?p=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}',
+            "url": "http://search.yahoo.com/search?p=site%3Ayoutube.com+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}",
             "step": 100
         },
         {
             "name": "bing",
-            "url": 'http://www.bing.com/search?q=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&count=50&first={counter}',
+            "url": "http://www.bing.com/search?q=site%3Ayoutube.com+%40{word}&count=50&first={counter}",
             "step": 50
         },
         {
             "name": "google",
-            "url": 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Atwitter.com+intitle:"on Twitter"+"%40{word}"',
+            "url": 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Ayoutube.com+"%40{word}"',
             "step": 100
         },
         {
             "name": "baidu",
-            "url": 'http://www.baidu.com/search/s?wd=site%3Atwitter.com+intitle:"on Twitter"+"%40{word}"&pn={counter}',
+            "url": 'http://www.baidu.com/search/s?wd=site%3Ayoutube.com+"%40{word}"&pn={counter}',
             "step": 10
         },
         {
             "name": "exalead",
-            "url": 'http://www.exalead.com/search/web/results/?q=site%3Atwitter.com+intitle:"on Twitter"+%40{word}&elements_per_page=10&start_index={counter}',
+            "url": "http://www.exalead.com/search/web/results/?q=site%3Ayoutube.com+%40{word}&elements_per_page=10&start_index={counter}" ,
             "step": 50
         },
     ]
@@ -71,7 +71,7 @@ class TwitterPlugin(Plugin):
         results = []
         for engine in self.engines:
             self.initialize(engine)
-            alert("\n[+] Searching in {0} + Twitter..\n".format(engine["name"]))
+            alert("\n[+] Searching in {0} + Youtube..\n".format(engine["name"]))
             self.process()
             results.extend(self.get_emails())
 
@@ -79,5 +79,5 @@ class TwitterPlugin(Plugin):
 
 
 def start(domain, limit, proxy, user_agent):
-    plugin = TwitterPlugin(domain, limit, proxy, user_agent)
+    plugin = YoutubePlugin(domain, limit, proxy, user_agent)
     return plugin.run()

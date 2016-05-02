@@ -21,63 +21,54 @@
     For more see the file 'LICENSE' for copying permission.
 """
 import time
-from core.plugin import Plugin
-from core.output import alert
-from core.output import message
+import requests
+import sys
+from EmailHarvester.core.plugin import Plugin
+from EmailHarvester.core.output import error
+from EmailHarvester.core.output import message
+from EmailHarvester.core.output import alert
 
 
-class RedditPlugin(Plugin):
-    engines = [
-        {
-            "name": "yahoo",
-            "url": "http://search.yahoo.com/search?p=site%3Areddit.com+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}",
-            "step": 100
-        },
-        {
-            "name": "bing",
-            "url": "http://www.bing.com/search?q=site%3Areddit.com+%40{word}&count=50&first={counter}",
-            "step": 50
-        },
-        {
-            "name": "google",
-            "url": 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Areddit.com+"%40{word}"',
-            "step": 100
-        },
-        {
-            "name": "baidu",
-            "url": 'http://www.baidu.com/search/s?wd=site%3Areddit.com+"%40{word}"&pn={counter}',
-            "step": 10
-        },
-        {
-            "name": "exalead",
-            "url": "http://www.exalead.com/search/web/results/?q=site%3Areddit.com+%40{word}&elements_per_page=10&start_index={counter}",
-            "step": 50
-        },
-    ]
+class AskPlugin(Plugin):
+    url = "http://www.ask.com/web?q=%40{word}&page={page}"
+    step = 10
+    page = 1
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,
                         limit=limit, start=self.start, step=self.step,
                         name=__name__, proxy=proxy, user_agent=user_agent)
 
+    def search(self):
+        try:
+            url = self.url.format(page=str(self.page), word=self.word)
+            headers = {'User-Agent': self.user_agent}
+            if self.proxy:
+                proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
+                req = requests.get(url, headers=headers, proxies=proxies)
+            else:
+                req = requests.get(url, headers=headers)
+
+        except Exception as e:
+            error(e)
+            sys.exit(4)
+
+        self.results += req.content.decode(req.encoding)
+
     def process(self):
+        alert("\n[+] Searching in {0}..\n".format(self.name))
         while self.start < self.limit:
             self.search()
             time.sleep(1)
             self.start += self.step
+            self.page += 1
             message("\tSearching {0} results...".format(self.start))
 
     def run(self):
-        results = []
-        for engine in self.engines:
-            alert("\n[+] Searching in {0} + Reddit..\n".format(engine["name"]))
-            self.initialize(engine)
-            self.process()
-            results.extend(self.get_emails())
-
-        return results
+        self.process()
+        return self.get_emails()
 
 
 def start(domain, limit, proxy, user_agent):
-    plugin = RedditPlugin(domain, limit, proxy, user_agent)
+    plugin = AskPlugin(domain, limit, proxy, user_agent)
     return plugin.run()

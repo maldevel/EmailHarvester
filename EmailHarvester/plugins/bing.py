@@ -20,13 +20,13 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-from core.plugin import Plugin
+from EmailHarvester.core.plugin import Plugin
 
 
-class DogpilePlugin(Plugin):
-    url = 'http://www.dogpile.com/search/web?qsi={counter}&q="%40{word}"'
+class BingPlugin(Plugin):
+    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
     start = 0
-    step = 10
+    step = 50
 
     def __init__(self, domain, limit, proxy, user_agent):
         Plugin.__init__(self, url=self.url, word=domain,
@@ -39,5 +39,5 @@ class DogpilePlugin(Plugin):
 
 
 def start(domain, limit, proxy, user_agent):
-    plugin = DogpilePlugin(domain, limit, proxy, user_agent)
+    plugin = BingPlugin(domain, limit, proxy, user_agent)
     return plugin.run()

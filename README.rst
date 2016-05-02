@@ -1,5 +1,5 @@
 EmailHarvester
-====
+==============
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc502b9b11744774a5b8c80f4c9f2ffc)](https://www.codacy.com/app/herveberaud-pro/EmailHarvester?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=4383/EmailHarvester&amp;utm_campaign=Badge_Grade)
 * A tool to retrieve Domain email addresses from Search Engines
 * Check the [License](https://github.com/4383/EmailHarvester/blob/master/LICENSE)
@@ -10,7 +10,7 @@ This project was inspired by:
 
 
 Requirements
-=====
+============
 * Python 3.x
 * termcolor
 * colorama
@@ -19,7 +19,7 @@ Requirements
 
 
 Features
-=====
+========
 * Retrieve Domain email addresses from popular Search engines (Google, Bing, Yahoo, ASK, Baidu, Dogpile, Exalead).
 * Export results to txt and xml files.
 * Limit search results.
@@ -30,7 +30,7 @@ Features
 
 
 Installation
-====
+=====================
 Using pip (Preferd method) :
 ----------------------------
 ...
@@ -43,6 +43,7 @@ Using git :
 git clone https://github.com/4383/EmailHarvester EmailHarvester
 cd EmailHarvester
 python setup.py install
+...
 
 
 Usage
@@ -74,7 +75,7 @@ optional arguments:
                         Set the User-Agent request header.
   -x PROXY, --proxy PROXY
                         Setup proxy server (example: http://127.0.0.1:8080)
-  --noprint             EmailHarvester will print discovered emails to terminal. 
+  --noprint             EmailHarvester will print discovered emails to terminal.
 						It is possible to tell EmailHarvester not to print results to terminal with this option.
   -r EXCLUDED_PLUGINS, --exclude EXCLUDED_PLUGINS
                         Plugins to exclude when you choose 'all' for search engine (eg. '-r google,twitter')
@@ -83,7 +84,7 @@ optional arguments:
 
 
 Examples
-=====
+========
 **Search in Google**
 * ./EmailHarvester.py -d example.com -e google
 
@@ -108,4 +109,4 @@ Examples
 * ./EmailHarvester.py -d example.com -e all -u "MyUserAgentString 1.0"
 
 **Proxy Server**
-* ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080 
+* ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080

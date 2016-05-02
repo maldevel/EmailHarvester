@@ -1,8 +1,12 @@
+#!/usr/bin/env python3
+# encoding: UTF-8
+__author__ = 'herve.beraud'
+
 """
     This file is part of EmailHarvester
     Copyright (C) 2016 @maldevel
     https://github.com/maldevel/EmailHarvester
-    
+
     EmailHarvester - A tool to retrieve Domain email addresses from Search Engines.
 
     This program is free software: you can redistribute it and/or modify
@@ -17,27 +21,18 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
+
     For more see the file 'LICENSE' for copying permission.
 """
-from core.plugin import Plugin
+from .core.launch import Launcher
 
 
-class ExaleadPlugin(Plugin):
-    url = "http://www.exalead.com/search/web/results/?q=%40{word}&elements_per_page=10&start_index={counter}"
-    start = 0
-    step = 50
+def main():
+    from sys import platform as _platform
 
-    def __init__(self, domain, limit, proxy, user_agent):
-        Plugin.__init__(self, url=self.url, word=domain,
-                        limit=limit, start=self.start, step=self.step,
-                        name=__name__, proxy=proxy, user_agent=user_agent)
+    if _platform == 'win32':
+        import colorama
+        colorama.init()
 
-    def run(self):
-        self.process()
-        return self.get_emails()
-
-
-def start(domain, limit, proxy, user_agent):
-    plugin = ExaleadPlugin(domain, limit, proxy, user_agent)
-    return plugin.run()
+    launcher = Launcher()
+    launcher.run()

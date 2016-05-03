@@ -59,8 +59,8 @@ usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
 | |___| | | | | || (_| || || | | | | || (_| || |    \ V /|  __/\__ \| |_|  __/| |
 \____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_|
 
-    A tool to retrieve Domain email addresses from Search Engines | @maldevel
-                                Version: 1.4.0
+    A tool to retrieve Domain email addresses from Search Engines | @4383 (Hervé Beraud)
+                                Version: 2.0.1
 
 optional arguments:
   -h, --help            show this help message and exit

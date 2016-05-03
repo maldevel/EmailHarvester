@@ -11,6 +11,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+from EmailHarvester.core.settings import __version__ as version
 
 here = path.abspath(path.dirname(__file__))
 
@@ -24,7 +25,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='2.0.0',
+    version=version,
 
     description='A tool to retrieve Domain email addresses from Search Engines',
     long_description=long_description,

@@ -9,7 +9,7 @@ DOOM = """
 | |___| | | | | || (_| || || | | | | || (_| || |    \ V /|  __/\__ \| |_|  __/| |
 \____/|_| |_| |_| \__,_||_||_| \_| |_/ \__,_||_|     \_/  \___||___/ \__|\___||_|
 
-    A tool to retrieve Domain email addresses from Search Engines | @maldevel
+    A tool to retrieve Domain email addresses from Search Engines | @4383 (Hervé Beraud)
                                 {}: {}
 """
 
@@ -22,7 +22,7 @@ ___________              .__.__    ___ ___                                     _
 /_______  /__|_|  (____  /__|____/\___|_  /(____  /__|    \_/  \___  >____  > |__|  \___  >__|
         \/      \/     \/               \/      \/                 \/     \/            \/
 
-    A tool to retrieve Domain email addresses from Search Engines | @maldevel
+    A tool to retrieve Domain email addresses from Search Engines | @4383 (Hervé Beraud)
                             {}: {}
 """
 
@@ -36,6 +36,6 @@ FIRE = """
 | _| | '  \()/ _` | | || | | __ |/ _` || '_|\ V / / -_)(_-<|  _|/ -_) | '_|
 |___||_|_|_| \__,_| |_||_| |_||_|\__,_||_|   \_/  \___|/__/ \__|\___| |_|
 
-    A tool to retrieve Domain email addresses from Search Engines | @maldevel
+    A tool to retrieve Domain email addresses from Search Engines | @4383 (Hervé Beraud)
                             {}: {}
 """

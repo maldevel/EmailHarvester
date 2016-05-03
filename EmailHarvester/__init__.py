@@ -24,15 +24,8 @@ __author__ = 'herve.beraud'
 
     For more see the file 'LICENSE' for copying permission.
 """
-from .core.launch import Launcher
+from EmailHarvester.core.launch import run
 
 
 def main():
-    from sys import platform as _platform
-
-    if _platform == 'win32':
-        import colorama
-        colorama.init()
-
-    launcher = Launcher()
-    launcher.run()
+    run()

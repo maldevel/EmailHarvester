@@ -107,3 +107,14 @@ class Launcher:
         self.search()
         self.display_results()
         self.save()
+
+
+def run():
+    from sys import platform as _platform
+
+    if _platform == 'win32':
+        import colorama
+        colorama.init()
+
+    launcher = Launcher()
+    launcher.run()

@@ -28,34 +28,33 @@ __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
 __credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella"]
 __license__ = "GPLv3"
-__version__ = "1.3.2"
+__version__ = "1.3.0"
 __maintainer__ = "maldevel"
 
 ################################
-
 import argparse
 import sys
 import time
 import requests
 import re
 import os
-import validators
 
 from termcolor import colored
 from argparse import RawTextHelpFormatter
 from sys import platform as _platform
 from urllib.parse import urlparse
 
+import src.com.plugins as pl
 ################################
-
 
 if _platform == 'win32':
     import colorama
     colorama.init()
 
 class myparser:
-    
+    # classe à refaire statiquement
     def __init__(self):
+        #inutile
         self.temp = []
         
     def extract(self, results, word):
@@ -77,10 +76,12 @@ class myparser:
             '[a-zA-Z0-9.-]*' +
             self.word)
         self.temp = reg_emails.findall(self.results)
+
         emails = self.unique()
         return emails
     
     def unique(self):
+        # inutile
         self.new = list(set(self.temp))
         return self.new
     
@@ -93,14 +94,13 @@ class EmailHarvester(object):
         self.proxy = proxy
         self.userAgent = userAgent
         self.parser = myparser()
-        self.activeEngine = "None"
-        path = "plugins/"
+        path = "src/com/plugins/"
         plugins = {}
         
         sys.path.insert(0, path)
         for f in os.listdir(path):
             fname, ext = os.path.splitext(f)
-            if ext == '.py':
+            if ext == '.py' and fname != "__init__" and fname !="Plugin":
                 mod = __import__(fname)
                 plugins[fname] = mod.Plugin(self, {'useragent':userAgent, 'proxy':proxy})
     
@@ -112,8 +112,11 @@ class EmailHarvester(object):
     
     def show_message(self, msg):
         print(green(msg))
-        
-    def init_search(self, url, word, limit, counterInit, counterStep, engineName):
+
+
+
+
+    def init_search(self, url, word, limit, counterInit, counterStep):
         self.results = ""
         self.totalresults = ""
         self.limit = int(limit)
@@ -121,8 +124,10 @@ class EmailHarvester(object):
         self.url = url
         self.step = int(counterStep)
         self.word = word
-        self.activeEngine = engineName
-        
+
+
+
+
     def do_search(self):
         try:
             urly = self.url.format(counter=str(self.counter), word=self.word)
@@ -136,20 +141,22 @@ class EmailHarvester(object):
         except Exception as e:
             print(e)
             sys.exit(4)
-        
+
         self.results = r.content.decode(r.encoding)
         self.totalresults += self.results
-    
+
+
+
     def process(self):
-        while (self.counter < self.limit):
+        while self.counter < self.limit:
             self.do_search()
             time.sleep(1)
             self.counter += self.step
-            print(green("[+] Searching in {}:".format(self.activeEngine)) + cyan(" {} results".format(str(self.counter))))
+            print("\tSearching " + str(self.counter) + " results...")
             
     def get_emails(self):
         self.parser.extract(self.totalresults, self.word)
-        return self.parser.emails()
+        return self.parser.emails()    
     
 ###################################################################
 
@@ -161,9 +168,6 @@ def green(text):
 
 def red(text):
     return colored(text, 'red', attrs=['bold'])
-
-def cyan(text):
-    return colored(text, 'cyan', attrs=['bold'])
 
 def unique(data):
         return list(set(data))
@@ -181,12 +185,6 @@ def limit_type(x):
     if x > 0:
         return x
     raise argparse.ArgumentTypeError("Minimum results limit is 1.")
-
-def checkDomain(value):
-    domain_checked = validators.domain(value)
-    if not domain_checked:
-        raise argparse.ArgumentTypeError('Invalid {} domain.'.format(value))
-    return value
 
 ###################################################################
 
@@ -207,7 +205,7 @@ if __name__ == '__main__':
                                      formatter_class=RawTextHelpFormatter)
     
     parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain', 
-                        default=None, type=checkDomain, help="Domain to search.")
+                        default=None, type=str, help="Domain to search.")
     parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename', 
                         default=None, type=str, help="Save the results into a TXT and XML file (both).")
     
@@ -215,7 +213,8 @@ if __name__ == '__main__':
                         default="all", type=str, help="Select search engine plugin(eg. '-e google').")
     
     parser.add_argument("-l", '--limit', action="store", metavar='LIMIT', dest='limit', 
-                        type=limit_type, default=100, help="Limit the number of results.")
+                        type=limit_type, default=100, help="Limit the number of results. By default, this number " +
+                                                           "is fixed to 100")
     parser.add_argument('-u', '--user-agent', action="store", metavar='USER-AGENT', dest='uagent', 
                         type=str, help="Set the User-Agent request header.")
     parser.add_argument('-x', '--proxy', action="store", metavar='PROXY', dest='proxy', 
@@ -226,35 +225,39 @@ if __name__ == '__main__':
                         type=str, default=None, help="Plugins to exclude when you choose 'all' for search engine (eg. '-r google,twitter')")
     parser.add_argument('-p', '--list-plugins', action='store_true', dest='listplugins', 
                         default=False, help='List all available plugins.')
-    
+
     if len(sys.argv) is 1:
         parser.print_help()
         sys.exit()
 
     args = parser.parse_args()
-    
+
     if args.listplugins:
-        path = "plugins/"
-        print(green("[+] Available plugins"))
-        sys.path.insert(0, path)
-        for f in os.listdir(path):
-            fname, ext = os.path.splitext(f)
-            if ext == '.py':
-                print(green("[+] Plugin: ") + cyan(fname))
+        msg = "[+] Available plugins:"
+        print(green(msg))
+        print(green("-" * len(msg)))
+        # Lists the content of the src/com/plugins directory
+        # Mean the list of used search engines
+        for f in pl.__all__:
+            print(f)
         sys.exit(1)
-        
+
     if not args.domain:
         print(red("[-] Please specify a domain name to search."))
         sys.exit(2)
+
+    # OptionManager
     domain = args.domain
 
+    # OptionManager
     userAgent = (args.uagent or
                  "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
     
-    print(green("[+] User-Agent in use: ") + cyan(userAgent))
-    
+    print("User-Agent in use: {}".format(yellow(userAgent)))
+
+    # OptionManager
     if args.proxy:
-        print(green("[+] Proxy server in use: ") + cyan(args.proxy.scheme + "://" + args.proxy.netloc))
+        print("Proxy server in use: {}".format(yellow(args.proxy.scheme + "://" + args.proxy.netloc)))
 
     filename = args.filename or ""
     limit = args.limit        
@@ -264,25 +267,30 @@ if __name__ == '__main__':
 
     all_emails = []
     excluded = []
+    # OptionManager -> plugins
+
     if args.exclude:
-        excluded = args.exclude.split(',')
+        excluded = [excludedEngine.strip() for excludedEngine in args.exclude.split(',')]
+        print(excluded)
     if engine == "all":
-        print(green("[+] Searching everywhere"))
+        print(green("[+] Searching everywhere.."))
         for search_engine in plugins:
             if search_engine not in excluded:
                 all_emails += plugins[search_engine]['search'](domain, limit)
     elif engine not in plugins:
-        print(red("[-] Search engine plugin not found"))
+        print(red("Search engine plugin not found"))
         sys.exit(3)
     else:
         all_emails = plugins[engine]['search'](domain, limit)
     all_emails = unique(all_emails)
     
     if not all_emails:
-        print(red("[-] No emails found"))
+        print(red("\nNo emails found!"))
         sys.exit(4)
 
-    print(green("[+] Emails found: ") + cyan(len(all_emails)))
+    msg = "\n\n[+] {} emails found:".format(len(all_emails))
+    print(green(msg))
+    print(green("-" * len(msg)))
 
     if not args.noprint:
         for emails in all_emails:
@@ -290,16 +298,18 @@ if __name__ == '__main__':
             
     if filename:
         try:
-            print(green("[+] Saving results to files"))
+            print(green("\n[+] Saving files..."))
             with open(filename, 'w') as out_file:
                 for email in all_emails:
                     try:
                         out_file.write(email + "\n")
                     except:
-                        print(red("[-] Exception: " + email))
+                        print(red("Exception " + email))
         except Exception as e:
-            print(red("[-] Error saving TXT file: " + e))
-            
+            print(red("Error saving TXT file: " + e))
+
+
+            # XML writer
         try:
             filename = filename.split(".")[0] + ".xml"
             with open(filename, 'w') as out_file:
@@ -307,7 +317,7 @@ if __name__ == '__main__':
                 for email in all_emails:
                     out_file.write('<email>{}</email>'.format(email))
                 out_file.write('</EmailHarvester>')
-            print(green("[+] Files saved"))
+            print(green("Files saved!"))
         except Exception as er:
-            print(red("[-] Error saving XML file: " + er))
+            print(red("Error saving XML file: " + er))
 

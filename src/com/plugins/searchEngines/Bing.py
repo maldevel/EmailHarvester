@@ -21,23 +21,24 @@
     For more see the file 'LICENSE' for copying permission.
 """
 
-#config = None
-app_emailharvester = None
+from com.core.SearchEngine import SearchEngine
+from com.plugins.SocialNetworks import SocialNetworks
 
 
-def search(domain, limit):
-    #search google+ only with google search engine
-    #who is gonna have google+ indexed better than google itself?
-    url = 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3Aplus.google.com+intext:"Works at"+-inurl:photos+-inurl:about+-inurl:posts+-inurl:plusones+%40{word}'
-    app_emailharvester.init_search(url, domain, limit, 0, 100, 'Google+')
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+class Bing(SearchEngine):
+    def __init__(self, site=None):
+        if site is None:
+            url_dict = {
+                "Bing": {"url": "http://www.bing.com/search?q=%40{word}&count=50&first={counter}",
+                           "init": 0,
+                           "step": 50}
+            }
+        else:
+            url_dict = {
+                site: {
+                    "url": "http://www.bing.com/search?q=site%3A" + SocialNetworks.get_all()[site] + "+%40{word}&count=50&first={counter}",
+                    "init": 0,
+                    "step": 50}
+            }
+        super().__init__(url_dict)
 
-
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('googleplus', {'search': search})
-        app_emailharvester = app
-        

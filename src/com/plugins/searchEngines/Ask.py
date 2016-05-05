@@ -21,21 +21,17 @@
     For more see the file 'LICENSE' for copying permission.
 """
 
-#config = None
-app_emailharvester = None
+from com.core.SearchEngine import SearchEngine
 
+class Ask(SearchEngine):
+    def __init__(self, site=None):
+        url_dict = {}
+        if site is None:
+            url_dict = {
+                "Ask": {"url": "http://www.ask.com/web?q=%40{word}&page={counter}",
+                        "init": 0,
+                        "step": 10,
+                        "page": 0}
+            }
+        super().__init__(url_dict)
 
-def search(domain, limit):
-    url = 'http://www.baidu.com/search/s?wd="%40{word}"&pn={counter}'
-    app_emailharvester.init_search(url, domain, limit, 0, 10, 'Baidu')
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
-
-
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('baidu', {'search': search})
-        app_emailharvester = app
-        

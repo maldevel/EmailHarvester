@@ -20,22 +20,23 @@
     
     For more see the file 'LICENSE' for copying permission.
 """
-
-#config = None
-app_emailharvester = None
-
-
-def search(domain, limit):
-    url = "http://www.exalead.com/search/web/results/?q=%40{word}&elements_per_page=10&start_index={counter}" 
-    app_emailharvester.init_search(url, domain, limit, 0, 50, 'Exalead')
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+from com.core.SearchEngine import SearchEngine
+from com.plugins.SocialNetworks import SocialNetworks
 
 
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('exalead', {'search': search})
-        app_emailharvester = app
-        
+class Baidu(SearchEngine):
+    def __init__(self, site=None):
+        if site is None:
+            url_dict = {
+                "Baidu": {"url":  'http://www.baidu.com/search/s?wd="%40{word}"&pn={counter}',
+                          "init": 0,
+                          "step": 10}
+            }
+        else:
+            url_dict = {
+                site: {
+                    "url": 'http://www.baidu.com/search/s?wd=site%3A' + SocialNetworks.get_all()[site] + '+"%40{word}"&pn={counter}',
+                    "init": 0,
+                    "step": 10}
+            }
+        super().__init__(url_dict)

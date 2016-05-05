@@ -2,6 +2,9 @@ from com.utils.ColorPrint import ColorPrint
 
 
 class EmailHarvesterException(Exception):
+    """
+    Special Exception class designed for the software, it can handle multiple value error and
+    """
     def __init__(self, value, msg=""):
         super().__init__()
         self.__value = value
@@ -25,3 +28,6 @@ class EmailHarvesterException(Exception):
 
         elif self.__value == 6:
             return ColorPrint.red("[-] Error while writing the XML file:\n" + str(self.__message))
+
+        elif self.__value == 0:
+            return ColorPrint.red("[-] Error during the execution of emailHarvester: " + str(self.__message))

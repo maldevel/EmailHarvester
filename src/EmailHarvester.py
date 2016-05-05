@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 from com.plugins.SocialNetworks import SocialNetworks
 from com.utils.ColorPrint import ColorPrint
 
-from com.core.EmailHarvester import EmailHarvester
+from com.core.Manager import Manager
 from com.core.OptionManager import OptionManager
 from com.utils.exceptions.EmailHarvesterException import EmailHarvesterException
 import com.plugins.searchEngines as SE
@@ -81,6 +81,7 @@ def engine_type(selected_engine):
                 raise argparse.ArgumentTypeError("The chosen search engine " + str(cap_engine) + " is unknown.")
     return engines
 
+
 def network_type(selected_network):
     """
     Check if the selected network is "all" or exists.
@@ -102,11 +103,11 @@ def network_type(selected_network):
     return networks
 
 
-def checkDomain(value):
-   domain_checked = validators.domain(value)
-   if not domain_checked:
-       raise argparse.ArgumentTypeError('Invalid {} domain.'.format(value))
-   return value
+def check_domain(value):
+    domain_checked = validators.domain(value)
+    if not domain_checked:
+        raise argparse.ArgumentTypeError('Invalid {} domain.'.format(value))
+    return value
 
 __version__ = "1.3.0"
 
@@ -127,7 +128,7 @@ if __name__ == '__main__':
                                      formatter_class=RawTextHelpFormatter)
 
     parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain',
-                        default=None, type=checkDomain, help="Domain to search.")
+                        default=None, type=check_domain, help="Domain to search.")
     parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename',
                         default=None, type=str, help="Save the results into a TXT and XML file (both).")
 
@@ -163,11 +164,10 @@ if __name__ == '__main__':
     option_manager = OptionManager()
     option_manager.set_options(args)
 
-    email_harvester = EmailHarvester()
+    manager = Manager()
     try:
-        email_harvester.run()
+        manager.run()
     except EmailHarvesterException as e:
         print(e)
         sys.exit()
 
-    # TODO Commentaries

@@ -5,6 +5,9 @@ from com.core.OptionManager import OptionManager
 
 
 class MyParser:
+    """
+    The MyParser class is able to look for emails in a html document.
+    """
 
     @staticmethod
     def generic_clean(results):

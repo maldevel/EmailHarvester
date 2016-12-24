@@ -21,21 +21,25 @@
     For more see the file 'LICENSE' for copying permission.
 """
 
-#config = None
-app_emailharvester = None
+from com.core.SearchEngine import SearchEngine
+from com.plugins.SocialNetworks import SocialNetworks
 
 
-def search(domain, limit):
-    url = 'https://www.google.com/search?num=100&start={counter}&hl=en&q="%40{word}"'
-    app_emailharvester.init_search(url, domain, limit, 0, 100, 'Google')
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+class Google(SearchEngine):
+    def __init__(self, site=None):
+        if site is None:
+            url_dict = {
+                "Google": {"url": 'https://www.google.com/search?num=100&start={counter}&hl=en&q="%40{word}"',
+                           "init": 0,
+                           "step": 100}
+            }
+        else:
+            url_dict = {
+                site: {
+                    "url": 'https://www.google.com/search?num=100&start={counter}&hl=en&q=site%3A' +
+                           SocialNetworks.get_all()[site] + '"%40{word}"',
+                    "init": 0,
+                    "step": 100}
+            }
+        super().__init__(url_dict)
 
-
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('google', {'search': search})
-        app_emailharvester = app
-        

@@ -21,21 +21,25 @@
     For more see the file 'LICENSE' for copying permission.
 """
 
-#config = None
-app_emailharvester = None
+from com.core.SearchEngine import SearchEngine
+from com.plugins.SocialNetworks import SocialNetworks
 
 
-def search(domain, limit):
-    url = "http://search.yahoo.com/search?p=%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
-    app_emailharvester.init_search(url, domain, limit, 1, 100, 'Yahoo')
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+class Exalead(SearchEngine):
+    def __init__(self, site=None):
+        if site is None:
+            url_dict = {
+                "Exalead": {"url": "http://www.exalead.com/search/web/results/?q=%40{word}&elements_per_page=50&start_index={counter}",
+                           "init": 0,
+                           "step": 50}
+            }
+        else:
+            url_dict = {
+                site: {
+                    "url": "http://www.exalead.com/search/web/results/?q=site%3A" +
+                           SocialNetworks.get_all()[site] + "+%40{word}&elements_per_page=50&start_index={counter}",
+                    "init": 0,
+                    "step": 50}
+            }
+        super().__init__(url_dict)
 
-
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('yahoo', {'search': search})
-        app_emailharvester = app
-        

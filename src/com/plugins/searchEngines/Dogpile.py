@@ -21,21 +21,17 @@
     For more see the file 'LICENSE' for copying permission.
 """
 
-#config = None
-app_emailharvester = None
+from com.core.SearchEngine import SearchEngine
 
 
-def search(domain, limit):
-    url = "http://www.bing.com/search?q=%40{word}&count=50&first={counter}"
-    app_emailharvester.init_search(url, domain, limit, 0, 50, 'Bing')
-    app_emailharvester.process()
-    return app_emailharvester.get_emails()
+class Dogpile(SearchEngine):
+    def __init__(self, site=None):
+        url_dict = {}
+        if site is None:
+            url_dict = {
+                "Dogpile": {"url": 'http://www.dogpile.com/search/web?qsi={counter}&q="%40{word}"',
+                            "init": 1,
+                            "step": 10}
+            }
+        super().__init__(url_dict)
 
-
-class Plugin:
-    def __init__(self, app, conf):#
-        global app_emailharvester, config
-        #config = conf
-        app.register_plugin('bing', {'search': search})
-        app_emailharvester = app
-        

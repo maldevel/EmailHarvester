@@ -31,7 +31,7 @@ Features
 Download/Installation
 ====
 * git clone https://github.com/maldevel/EmailHarvester
-* pip install -r requirements.txt --user
+* pip install -r requirements.txt
 
 
 Usage

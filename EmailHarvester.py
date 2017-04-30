@@ -136,7 +136,10 @@ class EmailHarvester(object):
         except Exception as e:
             print(e)
             sys.exit(4)
-        
+
+        if r.encoding is None:
+	          r.encoding = 'UTF-8'
+
         self.results = r.content.decode(r.encoding)
         self.totalresults += self.results
     

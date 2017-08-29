@@ -101,7 +101,7 @@ class EmailHarvester(object):
         for f in os.listdir(path):
             fname, ext = os.path.splitext(f)
             if ext == '.py':
-                mod = __import__(fname)
+                mod = __import__(fname, fromlist=[''])
                 plugins[fname] = mod.Plugin(self, {'useragent':userAgent, 'proxy':proxy})
     
     def register_plugin(self, search_method, functions):

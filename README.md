@@ -99,4 +99,12 @@ Examples
 **Proxy Server**
 * ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080 
 
-
+Docker
+=====
+Alpine based Dockerfile
+```bash
+git clone https://github.com/maldevel/EmailHarvester
+cd EmailHarvester
+docker build -t EmailHarvester .
+docker run -it EmailHarvester -d example.com
+```

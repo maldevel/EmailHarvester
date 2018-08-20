@@ -44,7 +44,10 @@ import validators
 from termcolor import colored
 from argparse import RawTextHelpFormatter
 from sys import platform as _platform
-from urllib.parse import urlparse
+try:
+  from urllib.parse import urlparse
+except ImportError:
+  from urlparse import urlparse
 
 ################################
 

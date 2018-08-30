@@ -97,7 +97,7 @@ class EmailHarvester(object):
         self.userAgent = userAgent
         self.parser = myparser()
         self.activeEngine = "None"
-        path = os.path.join(os.path.dirname(sys.argv[0]) + "/plugins/"
+        path = os.path.join(os.path.dirname(sys.argv[0]) + "/plugins/")
         plugins = {}
         
         sys.path.insert(0, path)

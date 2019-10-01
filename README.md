@@ -52,6 +52,8 @@ usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
 
 optional arguments:
   -h, --help            show this help message and exit
+  -k KEYWORD, --keyword KEYWORD
+                        Keyword to search.
   -d DOMAIN, --domain DOMAIN
                         Domain to search.
   -s FILE, --save FILE  Save the results into a TXT and XML file (both).
@@ -74,29 +76,29 @@ optional arguments:
 Examples
 =====
 **Search in Google**
-* ./EmailHarvester.py -d example.com -e google
+* ./EmailHarvester.py -k founder -d example.com -e google
 
 **Search in site using Search engines**
-* ./EmailHarvester.py -d example.com -e linkedin
-* ./EmailHarvester.py -d example.com -e twitter
-* ./EmailHarvester.py -d example.com -e googleplus
+* ./EmailHarvester.py -k founder -d example.com -e linkedin
+* ./EmailHarvester.py -k founder -d example.com -e twitter
+* ./EmailHarvester.py -k founder -d example.com -e googleplus
 
 **Search in all engines/sites**
-* ./EmailHarvester.py -d example.com -e all
+* ./EmailHarvester.py -k founder -d example.com -e all
 
 **Search in all engines/sites but exclude some**
-* ./EmailHarvester.py -d example.com -e all -r twitter,ask
+* ./EmailHarvester.py -k founder -d example.com -e all -r twitter,ask
 
 **Limit results**
-* ./EmailHarvester.py -d example.com -e all -l 200
+* ./EmailHarvester.py -k founder -d example.com -e all -l 200
 
 **Export emails**
-* ./EmailHarvester.py -d example.com -e all -l 200 -s emails.txt
+* ./EmailHarvester.py -k founder -d example.com -e all -l 200 -s emails.txt
 
 **Custom User-Agent string**
-* ./EmailHarvester.py -d example.com -e all -u "MyUserAgentString 1.0"
+* ./EmailHarvester.py -k founder -d example.com -e all -u "MyUserAgentString 1.0"
 
 **Proxy Server**
-* ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080 
+* ./EmailHarvester.py -k founder -d example.com -e all -x http://127.0.0.1:8080
 
 

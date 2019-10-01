@@ -81,7 +81,7 @@ class AskSearch(object):
         return app_emailharvester.parser.emails()
     
     
-def search(domain, limit):
+def search(keyword, domain, limit):
     url = "http://www.ask.com/web?q=%40{word}&page={page}"
     search = AskSearch(url, domain, limit)
     search.process()

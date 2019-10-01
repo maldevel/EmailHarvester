@@ -113,26 +113,26 @@ class EmailHarvester(object):
     def show_message(self, msg):
         print(green(msg))
         
-    def init_search(self, url, word, limit, counterInit, counterStep, engineName):
+    def init_search(self, url, keyword, word, limit, counterInit, counterStep, engineName):
         self.results = ""
         self.totalresults = ""
         self.limit = int(limit)
         self.counter = int(counterInit)
         self.url = url
         self.step = int(counterStep)
+        self.keyword = keyword
         self.word = word
         self.activeEngine = engineName
         
     def do_search(self):
         try:
-            urly = self.url.format(counter=str(self.counter), word=self.word)
+            urly = self.url.format(counter=str(self.counter), keyword=self.keyword, word=self.word)
             headers = {'User-Agent': self.userAgent}
             if(self.proxy):
                 proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
                 r=requests.get(urly, headers=headers, proxies=proxies)
             else:
                 r=requests.get(urly, headers=headers)
-                
         except Exception as e:
             print(e)
             sys.exit(4)
@@ -209,6 +209,8 @@ if __name__ == '__main__':
 """.format(red('Version'), yellow(__version__)),                                 
                                      formatter_class=RawTextHelpFormatter)
     
+    parser.add_argument("-k", '--keyword', action="store", metavar='KEYWORD', dest='keyword',
+                        default=None, type=str, help="Keyword to search.")
     parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain', 
                         default=None, type=checkDomain, help="Domain to search.")
     parser.add_argument("-s", '--save', action="store", metavar='FILE', dest='filename', 
@@ -245,7 +247,13 @@ if __name__ == '__main__':
             if ext == '.py':
                 print(green("[+] Plugin: ") + cyan(fname))
         sys.exit(1)
-        
+
+    if not args.keyword:
+        keyword = ""
+        print(red("[-] Will be searching with a blank keyword, for more targetted results its advisable to specify a keyword to search."))
+        sys.exit(2)
+    keyword = args.keyword
+
     if not args.domain:
         print(red("[-] Please specify a domain name to search."))
         sys.exit(2)
@@ -278,7 +286,7 @@ if __name__ == '__main__':
         print(red("[-] Search engine plugin not found"))
         sys.exit(3)
     else:
-        all_emails = plugins[engine]['search'](domain, limit)
+        all_emails = plugins[engine]['search'](keyword, domain, limit)
     all_emails = unique(all_emails)
     
     if not all_emails:

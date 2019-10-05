@@ -44,7 +44,10 @@ import validators
 from termcolor import colored
 from argparse import RawTextHelpFormatter
 from sys import platform as _platform
-from urllib.parse import urlparse
+try:
+  from urllib.parse import urlparse
+except ImportError:
+  from urlparse import urlparse
 
 ################################
 
@@ -94,7 +97,7 @@ class EmailHarvester(object):
         self.userAgent = userAgent
         self.parser = myparser()
         self.activeEngine = "None"
-        path = "plugins/"
+        path = os.path.dirname(os.path.abspath(__file__)) + "/plugins/"
         plugins = {}
         
         sys.path.insert(0, path)

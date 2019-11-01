@@ -29,12 +29,12 @@ def search(keyword, domain, limit):
     all_emails = []
     app_emailharvester.show_message("[+] Searching in Linkedin")
 
-    yahooUrl = "http://search.yahoo.com/search?p=site%3Alinkedin.com+{keyword}+{keyword}+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
+    yahooUrl = "http://search.yahoo.com/search?p=site%3Alinkedin.com+{keyword}+%40{word}&n=100&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vd=all&vst=0&vf=all&vm=p&fl=0&fr=yfp-t-152&xargs=0&pstart=1&b={counter}"
     app_emailharvester.init_search(yahooUrl, keyword, domain, limit, 1, 100, 'Yahoo + Linkedin')
     app_emailharvester.process()
     all_emails += app_emailharvester.get_emails()
     
-    bingUrl = "http://www.bing.com/search?q=site%3Alinkedin.com+{keyword}+{keyword}+%40{word}&count=50&first={counter}"
+    bingUrl = "http://www.bing.com/search?q=site%3Alinkedin.com+{keyword}+%40{word}&count=50&first={counter}"
     app_emailharvester.init_search(bingUrl, keyword, domain, limit, 0, 50, 'Bing + Linkedin')
     app_emailharvester.process()
     all_emails += app_emailharvester.get_emails()
@@ -49,7 +49,7 @@ def search(keyword, domain, limit):
     app_emailharvester.process()
     all_emails += app_emailharvester.get_emails()
 
-    url = "http://www.exalead.com/search/web/results/?q=site%3Alinkedin.com+{keyword}+{keyword}+%40{word}&elements_per_page=10&start_index={counter}"
+    url = "http://www.exalead.com/search/web/results/?q=site%3Alinkedin.com+{keyword}+%40{word}&elements_per_page=10&start_index={counter}"
     app_emailharvester.init_search(url, keyword, domain, limit, 0, 50, 'Exalead + Linkedin')
     app_emailharvester.process()
     all_emails += app_emailharvester.get_emails()

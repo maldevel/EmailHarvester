@@ -6,7 +6,11 @@ RUN apk --update add --virtual build-dependencies python3-dev build-base wget gi
   && git clone https://github.com/maldevel/EmailHarvester.git
 WORKDIR EmailHarvester
 
+#COPY email_harvester .
 #COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-ENTRYPOINT ["python3", "EmailHarvester.py"]
+#COPY setup.py .
+#COPY README.md .
+#COPY LICENSE .
+RUN python setup.py install
+ENTRYPOINT ["email_harvester"]
 CMD ["-h"]

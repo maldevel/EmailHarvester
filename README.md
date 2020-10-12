@@ -31,13 +31,13 @@ Features
 Download/Installation
 ====
 * git clone https://github.com/maldevel/EmailHarvester
-* pip install -r requirements.txt
+* python setup.py install
 
 
 Usage
 =====
 ```
-usage: EmailHarvester.py [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
+usage: email_harvester [-h] [-d DOMAIN] [-s FILE] [-e ENGINE] [-l LIMIT]
                          [-u USER-AGENT] [-x PROXY] [--noprint]
 
  _____                   _  _   _   _                                _
@@ -74,30 +74,30 @@ optional arguments:
 Examples
 =====
 **Search in Google**
-* ./EmailHarvester.py -d example.com -e google
+* email_harvester -d example.com -e google
 
 **Search in site using Search engines**
-* ./EmailHarvester.py -d example.com -e linkedin
-* ./EmailHarvester.py -d example.com -e twitter
-* ./EmailHarvester.py -d example.com -e googleplus
+* email_harvester -d example.com -e linkedin
+* email_harvester -d example.com -e twitter
+* email_harvester -d example.com -e googleplus
 
 **Search in all engines/sites**
-* ./EmailHarvester.py -d example.com -e all
+* email_harvester -d example.com -e all
 
 **Search in all engines/sites but exclude some**
-* ./EmailHarvester.py -d example.com -e all -r twitter,ask
+* email_harvester -d example.com -e all -r twitter,ask
 
 **Limit results**
-* ./EmailHarvester.py -d example.com -e all -l 200
+* email_harvester -d example.com -e all -l 200
 
 **Export emails**
-* ./EmailHarvester.py -d example.com -e all -l 200 -s emails.txt
+* email_harvester -d example.com -e all -l 200 -s emails.txt
 
 **Custom User-Agent string**
-* ./EmailHarvester.py -d example.com -e all -u "MyUserAgentString 1.0"
+* email_harvester -d example.com -e all -u "MyUserAgentString 1.0"
 
 **Proxy Server**
-* ./EmailHarvester.py -d example.com -e all -x http://127.0.0.1:8080 
+* email_harvester -d example.com -e all -x http://127.0.0.1:8080 
 
 Docker
 =====
@@ -105,6 +105,12 @@ Alpine based Dockerfile
 ```bash
 git clone https://github.com/maldevel/EmailHarvester
 cd EmailHarvester
-docker build -t EmailHarvester .
-docker run -it EmailHarvester -d example.com
+docker build . -t email_harvester
+docker run -it email_harvester -d example.com
 ```
+
+
+Development
+=====
+* git clone https://github.com/maldevel/EmailHarvester
+* pip install -e .

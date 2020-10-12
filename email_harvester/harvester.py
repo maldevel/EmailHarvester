@@ -64,6 +64,10 @@ class EmailHarvester(object):
         
     def get_plugins(self):
         return self.plugins
+
+    @staticmethod
+    def show_message(msg):
+        print(green(msg))
         
     def init_search(self, url, word, limit, counterInit, counterStep, engineName):
         self.results = ""

@@ -233,7 +233,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--list-plugins', action='store_true', dest='listplugins', 
                         default=False, help='List all available plugins.')
     
-    if len(sys.argv) is 1:
+    if len(sys.argv) == 1:
         parser.print_help()
         sys.exit()
 

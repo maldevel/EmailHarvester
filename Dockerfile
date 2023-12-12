@@ -7,6 +7,8 @@ RUN apk --update add --virtual build-dependencies python3-dev build-base wget gi
 WORKDIR EmailHarvester
 
 #COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN python3 -m venv /path/to/venv
+RUN . /path/to/venv/bin/activate
+RUN pip install -r requirements.txt
 ENTRYPOINT ["python3", "EmailHarvester.py"]
 CMD ["-h"]

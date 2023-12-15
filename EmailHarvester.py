@@ -138,7 +138,7 @@ class EmailHarvester(object):
                 
         except Exception as e:
             print(e)
-            sys.exit(4)
+            #sys.exit(4)
 
         if r.encoding is None:
 	          r.encoding = 'UTF-8'
@@ -276,7 +276,10 @@ if __name__ == '__main__':
         print(green("[+] Searching everywhere"))
         for search_engine in plugins:
             if search_engine not in excluded:
-                all_emails += plugins[search_engine]['search'](domain, limit)
+                try:
+                    all_emails += plugins[search_engine]['search'](domain, limit)
+                except Exception as ex:
+                    print("Error")
     elif engine not in plugins:
         print(red("[-] Search engine plugin not found"))
         sys.exit(3)

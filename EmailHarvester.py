@@ -26,13 +26,12 @@
 
 __author__ = "maldevel"
 __copyright__ = "Copyright (c) 2016 @maldevel"
-__credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella"]
+__credits__ = ["maldevel", "PaulSec", "cclauss", "Christian Martorella", "Adriel D. S. Andrade"]
 __license__ = "GPLv3"
 __version__ = "1.3.2"
 __maintainer__ = "maldevel"
 
 ################################
-
 import argparse
 import sys
 import time
@@ -40,17 +39,23 @@ import requests
 import re
 import os
 import validators
+import signal
 
 from termcolor import colored
 from argparse import RawTextHelpFormatter
 from sys import platform as _platform
 try:
-  from urllib.parse import urlparse
+    from urllib.parse import urlparse
 except ImportError:
-  from urlparse import urlparse
+    from urlparse import urlparse
 
 ################################
 
+def signal_handler(signal, frame):
+    print('\nCancelling search.')
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 if _platform == 'win32':
     import colorama
@@ -59,33 +64,40 @@ if _platform == 'win32':
 class myparser:
     
     def __init__(self):
-        self.temp = []
+        pass
         
     def extract(self, results, word):
-            self.results = results
-            self.word = word
+        self.results = results
+        self.word = word
 
-    def genericClean(self):
-        for e in '''<KW> </KW> </a> <b> </b> </div> <em> </em> <p> </span>
-                    <strong> </strong> <title> <wbr> </wbr>'''.split():
-            self.results = self.results.replace(e, '')
-        for e in '%2f %3a %3A %3C %3D & / : ; < = > \\'.split():
-            self.results = self.results.replace(e, ' ')
+    def clean_html_tags(self):
+        html_tags = ['<KW>', '</KW>', '</a>', '<b>', '</b>', '</div>', '<em>', '</em>', '<p>', '</span>',
+                     '<strong>', '</strong>', '<title>', '<wbr>', '</wbr>']
+        for tag in html_tags:
+            self.results = self.results.replace(tag, '')
+
+    def clean_special_characters(self):
+        special_chars = ['%2f', '%3a', '%3A', '%3C', '%3D', '&', '/', ':', ';', '<', '=', '>', '\\']
+        for char in special_chars:
+            self.results = self.results.replace(char, ' ')
         
     def emails(self):
-        self.genericClean()
+        self.clean_html_tags()
+        self.clean_special_characters()
         reg_emails = re.compile(
-            '[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
-            '@' +
-            '[a-zA-Z0-9.-]*' +
-            self.word)
-        self.temp = reg_emails.findall(self.results)
-        emails = self.unique()
+            r'[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
+            r'@' +
+            r'[a-zA-Z0-9.-]*' +
+            self.word
+        )
+
+        temp = reg_emails.findall(self.results)
+        emails = self.unique(temp)
         return emails
     
-    def unique(self):
-        self.new = list(set(self.temp))
-        return self.new
+    @staticmethod
+    def unique(data):
+        return list(set(data))
     
 ###################################################################
 
@@ -104,8 +116,14 @@ class EmailHarvester(object):
         for f in os.listdir(path):
             fname, ext = os.path.splitext(f)
             if ext == '.py':
-                mod = __import__(fname, fromlist=[''])
-                plugins[fname] = mod.Plugin(self, {'useragent':userAgent, 'proxy':proxy})
+                try:
+                    mod = __import__(fname, fromlist=[''])
+                    plugins[fname] = mod.Plugin(self, {'useragent':userAgent, 'proxy':proxy})
+                except ImportError as e:
+                    print(f"Error importing plugin {fname}: {e}")
+                except Exception as e:
+                    print(f"Error initializing plugin {fname}: {e}")
+                    raise e
     
     def register_plugin(self, search_method, functions):
         self.plugins[search_method] = functions
@@ -130,28 +148,30 @@ class EmailHarvester(object):
         try:
             urly = self.url.format(counter=str(self.counter), word=self.word)
             headers = {'User-Agent': self.userAgent}
-            if(self.proxy):
+            proxies = None
+            if self.proxy:
                 proxies = {self.proxy.scheme: "http://" + self.proxy.netloc}
-                r=requests.get(urly, headers=headers, proxies=proxies)
-            else:
-                r=requests.get(urly, headers=headers)
-                
-        except Exception as e:
-            print(e)
+            r = requests.get(urly, headers=headers, proxies=proxies)
+            r.raise_for_status()
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
             sys.exit(4)
 
         if r.encoding is None:
-	          r.encoding = 'UTF-8'
+            r.encoding = 'UTF-8'
 
-        self.results = r.content.decode(r.encoding)
-        self.totalresults += self.results
+        self.totalresults += r.text
+
     
     def process(self):
-        while (self.counter < self.limit):
-            self.do_search()
-            time.sleep(1)
-            self.counter += self.step
-            print(green("[+] Searching in {}:".format(self.activeEngine)) + cyan(" {} results".format(str(self.counter))))
+        try:
+            while self.counter < self.limit:
+                self.do_search()
+                time.sleep(1)
+                self.counter += self.step
+                print(green("[+] Searching in {}:".format(self.activeEngine)) + cyan(" {} results".format(str(self.counter))))
+        except Exception as e:
+            print(red("[-] Error searching in " + self.activeEngine))
             
     def get_emails(self):
         self.parser.extract(self.totalresults, self.word)
@@ -197,11 +217,10 @@ def checkDomain(value):
 ###################################################################
 
 if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(description="""
+    parser = argparse.ArgumentParser(description=r"""
 
  _____                   _  _   _   _                                _              
-|  ___|                 (_)| | | | | |                              | |             
+|  ___|                 (_)| | | | |                              | |             
 | |__  _ __ ___    __ _  _ | | | |_| |  __ _  _ __ __   __ ___  ___ | |_  ___  _ __ 
 |  __|| '_ ` _ \  / _` || || | |  _  | / _` || '__|\ \ / // _ \/ __|| __|/ _ \| '__|
 | |___| | | | | || (_| || || | | | | || (_| || |    \ V /|  __/\__ \| |_|  __/| |   
@@ -211,6 +230,7 @@ if __name__ == '__main__':
                                 {}: {}
 """.format(red('Version'), yellow(__version__)),                                 
                                      formatter_class=RawTextHelpFormatter)
+
     
     parser.add_argument("-d", '--domain', action="store", metavar='DOMAIN', dest='domain', 
                         default=None, type=checkDomain, help="Domain to search.")

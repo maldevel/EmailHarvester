@@ -36,6 +36,6 @@ class Plugin:
     def __init__(self, app, conf):#
         global app_emailharvester, config
         #config = conf
-        app.register_plugin('googles', {'search': search})
+        app.register_plugin('google', {'search': search})
         app_emailharvester = app
         

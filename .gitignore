@@ -68,3 +68,4 @@ RemoteSystemsTempFiles
 .metadata
 .settings
 *.prefs
+.vscode/

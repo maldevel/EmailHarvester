@@ -2,7 +2,7 @@
     This file is part of EmailHarvester
     Copyright (C) 2016 @maldevel
     https://github.com/maldevel/EmailHarvester
-    
+
     EmailHarvester - A tool to retrieve Domain email addresses from Search Engines.
 
     This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
+
     For more see the file 'LICENSE' for copying permission.
 """
 
@@ -39,7 +39,7 @@ def cyan(text):
     return colored(text, 'cyan', attrs=['bold'])
 
 class AskSearch(object):
-    
+
     def __init__(self, url, word, limit):
         self.results = ""
         self.totalresults = ""
@@ -50,7 +50,7 @@ class AskSearch(object):
         self.proxy = config["proxy"]
         self.userAgent = config["useragent"]
         self.counter = 0
-        
+
     def do_search(self):
         try:
             urly = self.url.format(page=str(self.page), word=self.word)
@@ -60,14 +60,16 @@ class AskSearch(object):
                 r=requests.get(urly, headers=headers, proxies=proxies)
             else:
                 r=requests.get(urly, headers=headers)
-                
+
         except Exception as e:
             print(e)
             sys.exit(4)
-        
+
+        if r.encoding is None:
+            r.encoding = 'UTF-8'
         self.results = r.content.decode(r.encoding)
         self.totalresults += self.results
-    
+
     def process(self):
         while (self.counter < self.limit):
             self.do_search()
@@ -75,12 +77,12 @@ class AskSearch(object):
             self.counter += 10
             self.page += 1
             print(green("[+] Searching in ASK:") + cyan(" {} results".format(str(self.counter))))
-            
+
     def get_emails(self):
         app_emailharvester.parser.extract(self.totalresults, self.word)
         return app_emailharvester.parser.emails()
-    
-    
+
+
 def search(domain, limit):
     url = "http://www.ask.com/web?q=%40{word}&page={page}"
     search = AskSearch(url, domain, limit)
@@ -94,4 +96,3 @@ class Plugin:
         config = conf
         app.register_plugin('ask', {'search': search})
         app_emailharvester = app
-        

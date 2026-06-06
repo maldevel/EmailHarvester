@@ -137,8 +137,7 @@ class EmailHarvester(object):
                 r=requests.get(urly, headers=headers)
                 
         except Exception as e:
-            print(e)
-            sys.exit(4)
+            raise e
 
         if r.encoding is None:
 	          r.encoding = 'UTF-8'
@@ -148,7 +147,11 @@ class EmailHarvester(object):
     
     def process(self):
         while (self.counter < self.limit):
-            self.do_search()
+            try:
+                self.do_search()
+            except Exception as e:
+                print(red("[-] Error in {}: {}".format(self.activeEngine, e)))
+                break
             time.sleep(1)
             self.counter += self.step
             print(green("[+] Searching in {}:".format(self.activeEngine)) + cyan(" {} results".format(str(self.counter))))

@@ -75,9 +75,9 @@ class myparser:
     def emails(self):
         self.genericClean()
         reg_emails = re.compile(
-            '[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
+            r'[a-zA-Z0-9.\-_+#~!$&\',;=:]+' +
             '@' +
-            '[a-zA-Z0-9.-]*' +
+            r'[a-zA-Z0-9.-]*' +
             self.word)
         self.temp = reg_emails.findall(self.results)
         emails = self.unique()
@@ -201,7 +201,7 @@ def checkDomain(value):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description="""
+    parser = argparse.ArgumentParser(description=r"""
 
  _____                   _  _   _   _                                _              
 |  ___|                 (_)| | | | | |                              | |             
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--list-plugins', action='store_true', dest='listplugins', 
                         default=False, help='List all available plugins.')
     
-    if len(sys.argv) is 1:
+    if len(sys.argv) == 1:
         parser.print_help()
         sys.exit()
 
